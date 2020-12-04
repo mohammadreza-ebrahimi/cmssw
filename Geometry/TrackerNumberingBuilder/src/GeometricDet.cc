@@ -114,6 +114,7 @@ GeometricDet::GeometricDet(cms::DDFilteredView* fv, GeometricEnumType type)
       rot_(fv->rotation()),
       shape_(fv->shape()),
       params_(computeLegacyShapeParameters(shape_, fv->solid())),
+<<<<<<< HEAD
       isFromDD4hep_(true) {
   using namespace angle_units::operators;
   if (almostEqual(phi_, -1._pi, 10)) {
@@ -142,7 +143,12 @@ GeometricDet::GeometricDet(cms::DDFilteredView* fv, GeometricEnumType type)
     fv->findSpecPar("TrackerRadLength", "TrackerXi");
     radLength_ = fv->getNextValue("TrackerRadLength");
     xi_ = fv->getNextValue("TrackerXi");
-  }
+      stereo_(fv->get<std::string_view>("TrackerStereoDetectors") == strue),
+      siliconAPVNum_(fv->get<double>("SiliconAPVNumber")),
+      isFromDD4hep_(true) {
+  fv->findSpecPar("TrackerRadLength", "TrackerXi");
+  radLength_ = fv->getNextValue("TrackerRadLength");
+  xi_ = fv->getNextValue("TrackerXi");
 }
 
 /*

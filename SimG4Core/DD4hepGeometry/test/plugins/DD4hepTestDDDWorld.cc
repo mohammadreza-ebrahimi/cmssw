@@ -29,6 +29,12 @@ using namespace cms;
 using namespace edm;
 using namespace dd4hep;
 
+#ifdef HAVE_GEANT4_UNITS
+#define MM_2_CM 1.0
+#else
+#define MM_2_CM 0.1
+#endif
+
 namespace {
   bool sortByName(const std::pair<G4LogicalVolume*, const dd4hep::SpecPar*>& p1,
                   const std::pair<G4LogicalVolume*, const dd4hep::SpecPar*>& p2) {
