@@ -1,7 +1,7 @@
 # hltGetConfiguration /dev/CMSSW_12_6_0/Fake2 --full --data --type Fake2 --unprescale --process HLTFake2 --globaltag auto:run2_hlt_Fake2 --input file:RelVal_Raw_Fake2_DATA.root
 
 # /dev/CMSSW_12_6_0/Fake2/V6 (CMSSW_12_6_0_pre5)
-
+ 
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process( "HLTFake2" )
