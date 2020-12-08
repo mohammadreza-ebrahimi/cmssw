@@ -18,6 +18,11 @@ else:
   process = cms.Process("BeamMonitor", Run3)
 
 
+# Configure tag and jobName if running Playback system
+if "dqm_cmssw/playback" in str(sys.argv[1]):
+  BSOnlineTag = BSOnlineTag + 'Playback'
+  BSOnlineJobName = BSOnlineJobName + 'Playback'
+
 # Message logger
 #process.load("FWCore.MessageLogger.MessageLogger_cfi")
 #process.MessageLogger = cms.Service("MessageLogger",
@@ -40,6 +45,7 @@ if 'unitTest=True' in sys.argv:
   live=False
   unitTest=True
   useLockRecords = False
+
 
 # Common part for PP and H.I Running
 #-----------------------------
@@ -227,6 +233,7 @@ if (process.runType.getRunType() == process.runType.pp_run or
         preLoadConnectionString = cms.untracked.string('frontier://FrontierProd/CMS_CONDITIONS'),
         runNumber = cms.untracked.uint64(options.runNumber),
         omsServiceUrl = cms.untracked.string(BSOnlineOmsServiceUrl),
+        writeTransactionDelay = cms.untracked.uint32(options.transDelay),
         latency = cms.untracked.uint32(2),
         autoCommit = cms.untracked.bool(True),
         saveLogsOnDB = cms.untracked.bool(True),
@@ -246,12 +253,12 @@ if (process.runType.getRunType() == process.runType.pp_run or
                                 messageLevel = cms.untracked.int32(0),
                                 authenticationPath = cms.untracked.string('.')
                                 ),
-
         # Upload to CondDB
         connect = cms.string('sqlite_file:BeamSpotOnlineHLT.db'),
         preLoadConnectionString = cms.untracked.string('sqlite_file:BeamSpotOnlineHLT.db'),
         runNumber = cms.untracked.uint64(options.runNumber),
         lastLumiFile = cms.untracked.string('src/DQM/Integration/python/clients/last_lumi.txt'),
+        writeTransactionDelay = cms.untracked.uint32(options.transDelay),
         latency = cms.untracked.uint32(2),
         autoCommit = cms.untracked.bool(True),
         toPut = cms.VPSet(cms.PSet(
@@ -262,9 +269,7 @@ if (process.runType.getRunType() == process.runType.pp_run or
         )),
         frontierKey = cms.untracked.string(options.runUniqueKey)
       )
-
     print("Configured frontierKey", options.runUniqueKey)
-
     process.p = cms.Path( process.hltTriggerTypeFilter
                         * process.tcdsDigis
                         * process.scalersRawToDigi

@@ -17,6 +17,12 @@ else:
     from Configuration.Eras.Era_Run3_cff import Run3
     process = cms.Process("BeamMonitor", Run3)
 
+# Configure tag and jobName if running Playback system
+if "dqm_cmssw/playback" in str(sys.argv[1]):
+    BSOnlineTag = BSOnlineTag + 'Playback'
+    BSOnlineJobName = BSOnlineJobName + 'Playback'
+
+#
 process.MessageLogger = cms.Service("MessageLogger",
     debugModules = cms.untracked.vstring('*'),
     cerr = cms.untracked.PSet(
@@ -156,7 +162,10 @@ if unitTest == False:
         preLoadConnectionString = cms.untracked.string('frontier://FrontierProd/CMS_CONDITIONS'),
 
         runNumber = cms.untracked.uint64(options.runNumber),
+        #lastLumiFile = cms.untracked.string('last_lumi.txt'),
+        #lastLumiUrl = cms.untracked.string('http://ru-c2e14-11-01.cms:11100/urn:xdaq-application:lid=52/getLatestLumiSection'),
         omsServiceUrl = cms.untracked.string(BSOnlineOmsServiceUrl),
+        writeTransactionDelay = cms.untracked.uint32(options.transDelay),
         latency = cms.untracked.uint32(2),
         autoCommit = cms.untracked.bool(True),
         saveLogsOnDB = cms.untracked.bool(True),
