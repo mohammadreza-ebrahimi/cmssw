@@ -17,6 +17,11 @@ else:
   from Configuration.Eras.Era_Run3_cff import Run3
   process = cms.Process("BeamMonitor", Run3)
 
+# Configure tag and jobName if running Playback system
+if "dqm_cmssw/playback" in str(sys.argv[1]):
+  BSOnlineTag = BSOnlineTag + 'Playback'
+  BSOnlineJobName = BSOnlineJobName + 'Playback'
+
 # switch
 live = True # FIXME
 unitTest = False
@@ -131,6 +136,7 @@ if unitTest == False:
       preLoadConnectionString = cms.untracked.string('frontier://FrontierProd/CMS_CONDITIONS'),
       runNumber = cms.untracked.uint64(options.runNumber),
       omsServiceUrl = cms.untracked.string(BSOnlineOmsServiceUrl),
+      writeTransactionDelay = cms.untracked.uint32(options.transDelay),
       latency = cms.untracked.uint32(2),
       autoCommit = cms.untracked.bool(True),
       saveLogsOnDB = cms.untracked.bool(True),

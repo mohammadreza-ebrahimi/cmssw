@@ -5,10 +5,11 @@ import time
 # Define here the BeamSpotOnline record name,
 # it will be used both in FakeBeamMonitor setup and in payload creation/upload
 BSOnlineRecordName = 'BeamSpotOnlineLegacyObjectsRcd'
-BSOnlineTag = 'BeamSpotOnlineFakeLegacy'
-BSOnlineJobName = 'BeamSpotOnlineFakeLegacy'
 BSOnlineOmsServiceUrl = 'http://cmsoms-services.cms:9949/urn:xdaq-application:lid=100/getRunAndLumiSection'
 useLockRecords = True
+BSOnlineTag = 'BeamSpotOnlineTestLegacy'
+BSOnlineJobName = 'BeamSpotOnlineTestLegacy'
+
 import sys
 if 'runkey=hi_run' in sys.argv:
     from Configuration.Eras.Era_Run3_pp_on_PbPb_approxSiStripClusters_cff import Run3_pp_on_PbPb_approxSiStripClusters
@@ -17,6 +18,12 @@ else:
     from Configuration.Eras.Era_Run3_cff import Run3
     process = cms.Process("BeamMonitor", Run3)
 
+# Configure tag and jobName if running Playback system
+if "dqm_cmssw/playback" in str(sys.argv[1]):
+    BSOnlineTag = BSOnlineTag + 'Playback'
+    BSOnlineJobName = BSOnlineJobName + 'Playback'
+
+#
 process.MessageLogger = cms.Service("MessageLogger",
     debugModules = cms.untracked.vstring('*'),
     cerr = cms.untracked.PSet(
@@ -157,6 +164,9 @@ if unitTest == False:
 
         runNumber = cms.untracked.uint64(options.runNumber),
         omsServiceUrl = cms.untracked.string(BSOnlineOmsServiceUrl),
+        #lastLumiFile = cms.untracked.string('last_lumi.txt'),
+        #lastLumiUrl = cms.untracked.string('http://ru-c2e14-11-01.cms:11100/urn:xdaq-application:lid=52/getLatestLumiSection'),
+        writeTransactionDelay = cms.untracked.uint32(options.transDelay),
         latency = cms.untracked.uint32(2),
         autoCommit = cms.untracked.bool(True),
         saveLogsOnDB = cms.untracked.bool(True),
