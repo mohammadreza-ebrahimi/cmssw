@@ -64,6 +64,9 @@ Tracker:
 * T25: Phase2 tilted tracker. Outer Tracker (v8.0.0): same as T24/T21. Inner Tracker (v7.0.2): Based on (v6.1.5) (T24/T21), but with 3D sensors in TBPX L1. Compatible with DD4hep library.
 * T26: Phase2 tilted tracker. Outer Tracker (v8.0.0): same as T24/T21. Inner Tracker (v7.0.3): Based on (v6.1.5) (T24/T21), but with 3D sensors in TBPX L1 and 50x50 pixel aspect ratio in TFPX and TEPX. Compatible with DD4hep library.
 * T30: Phase2 titled tracker. Exploratory geometry *only to be used in D91 for now*. Outer Tracker (v8.0.1): based on v8.0.0 with updated TB2S spacing. Inner Tracker (v6.4.0): based on v6.1.5 but TFPX with more realistic module positions.
+* T22: Phase2 tilted tracker. Outer Tracker (v8.0.0): same as T21. Inner Tracker: Based on (v6.1.5) (T21), but with 50x50 pixel aspect ratio everywhere.
+* T23: Phase2 tilted tracker. Outer Tracker (v8.0.0): same as T21. Inner Tracker: Based on (v6.1.5) (T21), but with 3D sensors in TBPX L1 + TBPX L2 + TFPX R1.
+* T24: Phase2 tilted tracker. Outer Tracker (v8.0.0): same as T21. Tracker mother volume cut-out + shorten PixelForward mother volume, to leave space for FBCM (BRIL).
 
 Calorimeters:
 * C9: HGCal (v11 post TDR HGCal Geometry w/ corner centering for HE part) + Phase2 HCAL and EB + Tracker cables (used in 2026D49)
@@ -99,7 +102,7 @@ The script also handles the common and forward elements of the geometry:
 * O5: same as O4 but with changes needed for new support structure 
 * O6: same as O5 with changes needed for new defintion of boundaries
 * O7: same as O6 with changes needed for new defintion of calorimeter boundaries
-* O8: same as O7 with changes needed for a newer definition of calorimeter boundaries
+* O8: same as O7 with additional definition of FBCM (BRIL) geometry
 * O9: same as O8 with changes needed to support the additional notch in ETL
 
 * F2: modifications needed to accommodate detailed cavern, ZDC description is removed.
@@ -129,3 +132,21 @@ Several detector combinations have been generated:
 * D92 = T24+C18+M10+I15+O9+F6
 * D93 = T24+C19+M10+I15+O9+F6
 * D94 = T24+C20+M10+I15+O9+F8
+
+
+
+* D50 = T15+C9+M4+I11+O4+F2
+
+* D64 = T22+C11+M4+I11+O5+F4
+* D65 = T23+C11+M4+I11+O5+F4
+* D66 = T21+C11+M8+I11+O5+F4
+* D67 = T21+C11+M9+I11+O5+F4
+
+* D69 = T21+C12+M6+I11+O5+F5
+* D70 = T21+C13+M7+I11+O6+F6
+* D71 = T21+C14+M7+I11+O7+F6
+* D72 = T21+C11+M6+I12+O5+F4
+* D73 = T21+C11+M6+I13+O5+F4
+* D74 = T21+C14+M9+I11+O7+F6
+
+D49 is the HLT TDR baseline.

@@ -133,6 +133,10 @@ commonDict = {
             'Geometry/CMSCommonData/data/muonMagnet.xml',
             'Geometry/CMSCommonData/data/cavern/2021/v1/cavern.xml',
             'Geometry/CMSCommonData/data/cavernFloor/2017/v1/cavernFloor.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/FbcmVolume/cmsFbcm.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v1/fbcm.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v1/FbcmSpecs.xml',
+			'Geometry/FbcmSimData/data/PhaseII/FbcmSens.xml',
         ],
         5 : [
             'Geometry/CMSCommonData/data/FieldParameters.xml',
@@ -163,6 +167,11 @@ commonDict = {
         ],
         5 : [
             'Geometry/CMSCommonData/data/FieldParameters.xml',
+        "sim" : [
+            'from Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi import *',
+        ],
+        "reco" : [
+            'from Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi import *',
         ],
         "era" : "phase2_common, phase2_trigger",
     },
@@ -390,7 +399,42 @@ trackerDict = {
             'trackerGeometry.applyAlignment = cms.bool(False)',
         ],
         "era" : "phase2_tracker, trackingPhase2PU140",
-    } 
+    },
+    "T24" : {
+        1 : [
+            'Geometry/TrackerCommonData/data/PhaseII/trackerParameters.xml',
+            'Geometry/TrackerCommonData/data/pixfwdCommon.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/OuterTracker_ShortenedPixfwd/pixfwd.xml',
+			'Geometry/TrackerCommonData/data/PhaseII/OuterTracker616_2020_04/pixbar.xml',
+            'Geometry/TrackerCommonData/data/trackermaterial.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/OuterTracker616_2020_04/otst.xml',
+			'Geometry/TrackerCommonData/data/PhaseII/OuterTracker_ShortenedPixfwd/tracker.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker615/pixel.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/trackerbar.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/trackerfwd.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/trackerStructureTopology.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker613/pixelStructureTopology.xml',
+            'Geometry/TrackerSimData/data/PhaseII/TiltedTracker404/trackersens.xml',
+            'Geometry/TrackerSimData/data/PhaseII/TiltedTracker404/pixelsens.xml',
+            'Geometry/TrackerRecoData/data/PhaseII/OuterTracker616_2020_04/trackerRecoMaterial.xml',
+            'SimTracker/TrackerMaterialAnalysis/data/trackingMaterialGroups_ForPhaseII.xml',
+            'Geometry/TrackerSimData/data/PhaseII/TiltedTracker404/trackerProdCuts.xml',
+            'Geometry/TrackerSimData/data/PhaseII/TiltedTracker404/pixelProdCuts.xml',
+            'Geometry/TrackerSimData/data/trackerProdCutsBEAM.xml',
+        ],
+        "sim" : [
+            'from Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi import *',
+        ],
+        "reco" : [
+            'from Geometry.CommonTopologies.globalTrackingGeometry_cfi import *',
+            'from RecoTracker.GeometryESProducer.TrackerRecoGeometryESProducer_cfi import *',
+            'from Geometry.TrackerGeometryBuilder.trackerParameters_cff import *',
+            'from Geometry.TrackerNumberingBuilder.trackerTopology_cfi import *',
+            'from Geometry.TrackerGeometryBuilder.idealForDigiTrackerGeometry_cff import *',
+            'trackerGeometry.applyAlignment = cms.bool(False)',
+        ],
+        "era" : "phase2_tracker, trackingPhase2PU140",
+    },
 }
 
 
@@ -1809,6 +1853,11 @@ detectorVersionDict = {
     ("O9","T24","C18","M10","F6","I15") : "D92",
     ("O9","T24","C19","M10","F6","I15") : "D93",
     ("O9","T24","C20","M10","F8","I15") : "D94",
+    ("O7","T21","C14","M7","F6","I11") : "D71",
+    ("O5","T21","C11","M6","F4","I12") : "D72",
+    ("O5","T21","C11","M6","F4","I13") : "D73",
+    ("O7","T21","C14","M9","F6","I11") : "D74",
+	("O8","T24","C14","M9","F6","I11") : "D80",
  }
 
 deprecatedDets = set([ "D1", "D2", "D3", "D5", "D6" , "D7", "D4", "D8" , "D9", "D12", "D13", "D15", "D10", "D11", "D14", "D16", "D17", "D18", "D19", "D20", "D21", "D22", "D23", "D24", "D25", "D26", "D27", "D28", "D29", "D30", "D31", "D32", "D33", "D34", "D36", "D37", "D38", "D39", "D40", "D42", "D35", "D41", "D43", "D44", "D45", "D46", "D48", "D47", "D50", "D51", "D52", "D53", "D54", "D55", "D56", "D57", "D58", "D59", "D61", "D62", "D63", "D64", "D65", "D66", "D67", "D69", "D71", "D72", "D73", "D74", "D75", "D78", "D79", "D87", "D89", "D90"])
