@@ -82,7 +82,7 @@ class Eras (object):
                            'run3_nanoAOD_devel', 'run3_nanoAOD_122',
                            'hcalHardcodeConditions', 'hcalSkipPacker',
                            'run2_HLTconditions_2016','run2_HLTconditions_2017','run2_HLTconditions_2018',
-                           'bParking']
+                           'bParking','fbcmDigi','OnlyfbcmDigi']
         internalUseModChains = ['run2_2017_noTrackingModifier', 'trackingMkFitProd']
 
         self.pythonCfgLines = {}
