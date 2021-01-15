@@ -71,8 +71,8 @@ FbcmGeometryESModule::FbcmGeometryESModule(const edm::ParameterSet& p)
   //std::cout << "Hello From Constructor\n"; 
   
   if (useDDD_) {
-    //cc.setConsumes(cpvToken_); // version CMSSW_11_0_X
-	cpvToken_ = cc.consumes(); // version CMSSW_11_2_X
+    //cc.setConsumes(cpvToken_); // for CMSSW_11_0_X
+	cpvToken_ = cc.consumes(); // for CMSSW_11_2_X
   } else {
     //cc.setConsumes(rig_FbcmToken);
 	//rig_FbcmToken = cc.consumes();

@@ -93,10 +93,10 @@ void FbcmGeometryTest::analyze(const edm::Event&, const edm::EventSetup& iEventS
   
   //FbcmGeom.product();
   
-  	for(const auto& SiPadGeomDet: allSiPadGeoms2) {
+  	//for(const auto& SiPadGeomDet: allSiPadGeoms2) {
 			//std::cout << SiPadGeomDet->id();
 			 ////Cool! it is OK!
-		}
+	//	}
   
  
 }
