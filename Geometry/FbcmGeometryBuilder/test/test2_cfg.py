@@ -9,7 +9,7 @@ process.maxEvents = cms.untracked.PSet(
     )
 
 
-process.load('Configuration.Geometry.GeometryExtended2026D60_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D80_cff')
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 #Note: only use one of the following:
