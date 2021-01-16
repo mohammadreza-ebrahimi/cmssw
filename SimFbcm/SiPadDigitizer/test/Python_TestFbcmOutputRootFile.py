@@ -15,7 +15,7 @@ ROOT.FWLiteEnabler.enable()
 
 #edm::DetSetVector<SiPadDigiData>      "simFbcmDigis"              "SiPad"  
 
-events = Events ("../../../p1/p2/GEN_SIM_DIGI.root")
+events = Events ("../../SampleConfigs/GEN_SIM_DIGI.root")
 handle  = Handle ("edm::DetSetVector<SiPadDigiData>")
 label = ("simFbcmDigis","SiPad")
 outputfileName = 'CheckEventNo_'
