@@ -23,7 +23,7 @@
     <Constant name="SensorPadRow_LY" value="[SensorPad_ShiftY]"></Constant>
     <Constant name="SiliconDie_LX"            value="[SensorPadRow_LX]"></Constant>
     <Constant name="SiliconDie_LY"            value="[SensorPadRow_LY]*[NumOfPadRows]"/>
-    <Constant name="SiliconDie_LZ"            value="0.35*mm"></Constant>
+    <Constant name="SiliconDie_LZ"            value="0.3*mm"></Constant>
     <Constant name="SiliconDie_Z"             value="2835.*mm"><!-- z position of the center of the Silicon wrt CMS --></Constant>
  	<Constant name="SensorPad_Z"             value="[SiliconDie_Z]"></Constant>
 
