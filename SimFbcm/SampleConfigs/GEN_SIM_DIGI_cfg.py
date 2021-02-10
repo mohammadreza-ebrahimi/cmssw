@@ -4,6 +4,15 @@
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
 # with command line options: --evt_type SingleNuE10_cfi -s GEN,SIM,DIGI --mc --fileout file:GEN_SIM_DIGI.root --conditions auto:phase2_realistic --pileup_input file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root --pileup "AVE_200_BX_25ns,{'B':(-3,3),'N':1.5}" --era Phase2,fbcmDigi,OnlyfbcmDigi --datatier GEN-SIM-DIGI-RAW --geometry Extended2026D80 --eventcontent FEVTDEBUG --python_filename GEN_SIM_DIGI_cfg.py --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000,Configuration/DataProcessing/Utils.addMonitoring --nThreads 2 -n 2 --no_exe
 import FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.VarParsing as VarParsing
+
+options = VarParsing.VarParsing ('analysis')
+options.register ('pu',
+                  0, # default value
+                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.VarParsing.varType.float,          # string, int, or float
+                  "number of pile up events")
+options.parseArguments()
 
 from Configuration.Eras.Era_Phase2_cff import Phase2
 from Configuration.Eras.Modifier_fbcmDigi_cff import fbcmDigi
@@ -88,11 +97,11 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 # Additional output definition
 
 # Other statements
-process.mix.input.nbPileupEvents.averageNumber = cms.double(1.500000)
+process.mix.input.nbPileupEvents.averageNumber = cms.double(options.pu)
 process.mix.bunchspace = cms.int32(25)
 process.mix.minBunch = cms.int32(-3)
 process.mix.maxBunch = cms.int32(3)
-process.mix.input.fileNames = cms.untracked.vstring(['file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root'])
+process.mix.input.fileNames = cms.untracked.vstring(['/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/MinBias/FBCMMinBias/210127_070946/0000/MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM_{0}.root'.format(d) for d in range(1,501) if d not in [26,129] ])
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')

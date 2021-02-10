@@ -9,6 +9,7 @@
 <use   name="Geometry/FbcmGeometryBuilder"/>
 <use name="Geometry/Records"/>
 
-<library   file="CheckFbcmOutputRootFile.cc" name="FbcmOutputRootFileTester">
+<library   file="*.cc" name="FbcmOutputRootFileTester">
   <flags   EDM_PLUGIN="1"/>
 </library>
+

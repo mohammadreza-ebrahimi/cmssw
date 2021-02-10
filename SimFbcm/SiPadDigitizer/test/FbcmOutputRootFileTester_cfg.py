@@ -17,7 +17,7 @@ process.load('Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi')
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        'file:../../SampleConfigs/GEN_SIM_DIGI.root'
+        'file:/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/NuGun/FBCMNuGunPU100/210130_220345/0000/GEN_SIM_DIGI_1.root'
     )
 )
 
