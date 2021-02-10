@@ -13,6 +13,9 @@
 #include "DataFormats/FbcmDigi/interface/SiPadDigiData.h"
 #include "DataFormats/FbcmDetId/interface/FbcmDetId.h"
 
+#include "Geometry/Records/interface/FbcmGeometryRecord.h"
+#include "Geometry/FbcmGeometry/interface/FbcmGeometry.h"
+
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
@@ -30,7 +33,7 @@ class FbcmOutputRootFileTester : public edm::EDAnalyzer {
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
-      //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
+      virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
       //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
       //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
       //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
@@ -39,6 +42,7 @@ class FbcmOutputRootFileTester : public edm::EDAnalyzer {
       // ----------member data ---------------------------
       const edm::InputTag FbcmDigiTag_;
 	  edm::EDGetTokenT< edm::DetSetVector<SiPadDigiData> > TokenTag_;
+	  edm::ESHandle<FbcmGeometry> theFbcmGeom;
 	  
       TH1D *histo;
 
@@ -85,6 +89,8 @@ FbcmOutputRootFileTester::analyze(const edm::Event& iEvent, const edm::EventSetu
 
    using namespace edm;
    using namespace std;
+
+	//iSetup.get<FbcmGeometryRecord>().get(theFbcmGeom);
 
    edm::Handle< edm::DetSetVector<SiPadDigiData> > handle;
    ///both "getByToken" and "getByLabel" work well
@@ -138,18 +144,20 @@ FbcmOutputRootFileTester::endJob()
 }
 
 // ------------ method called when starting to processes a run  ------------
-/*
+
 void 
-FbcmOutputRootFileTester::beginRun(edm::Run const&, edm::EventSetup const&)
+FbcmOutputRootFileTester::beginRun(edm::Run const&, edm::EventSetup const& iSetup)
 {
+	iSetup.get<FbcmGeometryRecord>().get(theFbcmGeom);
 }
-*/
+
 
 // ------------ method called when ending the processing of a run  ------------
 /*
 void 
 FbcmOutputRootFileTester::endRun(edm::Run const&, edm::EventSetup const&)
 {
+		std::cout << "Run finished\n";
 }
 */
 
