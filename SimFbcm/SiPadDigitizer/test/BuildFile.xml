@@ -5,6 +5,9 @@
 <use name="DataFormats/FbcmDigi"/>
 <use name="DataFormats/FbcmDetId"/>
 <use name="CommonTools/UtilAlgos"/>
+<use   name="Geometry/FbcmGeometry"/>
+<use   name="Geometry/FbcmGeometryBuilder"/>
+<use name="Geometry/Records"/>
 
 <library   file="CheckFbcmOutputRootFile.cc" name="FbcmOutputRootFileTester">
   <flags   EDM_PLUGIN="1"/>
