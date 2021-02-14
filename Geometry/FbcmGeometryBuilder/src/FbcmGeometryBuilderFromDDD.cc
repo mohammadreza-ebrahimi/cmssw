@@ -65,7 +65,7 @@ void FbcmGeometryBuilderFromDDD::buildGeometry(FbcmGeometry& theFbcmGeometry, DD
 		if (DDfetch(is, NumOfStations)) 
 			nStations = (int) (NumOfStations.doubles()[0]);
 	}
-	theFbcmGeometry.SetNumOfStations(nStations); 
+	theFbcmGeometry.SetNumOfStations(nStations); // this is per end
 	//std::cout << "SetNumOfStations read as: " << theFbcmGeometry.NumOfStations() << "\n";
 	
 	

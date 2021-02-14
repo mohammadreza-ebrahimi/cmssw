@@ -73,13 +73,22 @@ void FbcmGeometryTest::analyze(const edm::Event&, const edm::EventSetup& iEventS
 		  FbcmDetId detId1(sideId,st,die,0); 
 		  //std::cout << detId1;
 		   const FbcmSiliconDieGeom * DieGeomPtr=FbcmGeom2->IdToSiliconDie(detId1);
+		   const FbcmStationGeom * StationGeomPtr=FbcmGeom2->IdToStation(detId1);
+		   const FbcmSiPadGeom* SiPadGeomPtr = FbcmGeom2->IdToSiPad(detId1); 
+		   
 		   if (DieGeomPtr) {
 			  if (detId1.SiliconDieDetId()() != DieGeomPtr->id())
 				  std::cout << "Fatal Error\n";
 			  else  { 
-				  std::cout << "Pos:" << DieGeomPtr->surface().position()  << ",\t"; 
-				  std::cout << "nRows: " << DieGeomPtr->NumOfRows() <<"\tnCols: " << DieGeomPtr->NumOfCols() ; 
-				  std::cout << ",\tfor: " << DieGeomPtr->id();
+			  std::pair<float, float> SiPadDimension = SiPadGeomPtr->SiPadTopology().pitch();
+			float SiPadArea = SiPadDimension.first * SiPadDimension.second ;
+				//  std::cout << "Pos:" << DieGeomPtr->surface().position()  << ",\t"; 
+				std::cout << "Station Ring/Die: " << StationGeomPtr->NumOfRings() << "/" << StationGeomPtr->NumOfDiesPerRing() << ", ";
+				  std::cout << "nRows: " << DieGeomPtr->NumOfRows() <<"  nCols: " << DieGeomPtr->NumOfCols() << ", SiPads in a Die: " << DieGeomPtr->NumOfRows()*DieGeomPtr->NumOfCols() ; 
+				  std::cout << ", nbrOfSiPads: " << DieGeomPtr->SiPads().size()  ;
+				  std::cout << ", SizeGroup: " << (detId1.SiliconDie() % StationGeomPtr->NumOfDiesPerRing());
+				  std::cout << ", Area: " << SiPadArea; 
+				  std::cout << " , for: " << DieGeomPtr->id(); 
 			  }
 		  }
 		  else
