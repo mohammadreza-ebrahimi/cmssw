@@ -45,15 +45,16 @@ def main():
             if  hit.DigiHitStatus[bx]==1:
                 digiHitsPerRho.Fill(hit.SensorRho )
     
-    simhitsPerRho.Divide( totalAreaPerRho )
-    digiHitsPerRho.Divide( totalAreaPerRho )
-
-
-    fout = ROOT.TFile.Open( opt.outfile , "recreate")
-    simhitsPerRho.Write()
-    digiHitsPerRho.Write()
-    fout.Close()
-    return 0
+	simhitsPerRho.Divide( totalAreaPerRho )
+	digiHitsPerRho.Divide( totalAreaPerRho )
+	
+	fout = ROOT.TFile.Open( opt.outfile , "recreate")
+	simhitsPerRho.Write()
+	digiHitsPerRho.Write()
+	#sensorsPerRho.Write()
+	#totalAreaPerRho.Write()
+	fout.Close()
+	return 0
 
 if __name__ == "__main__":
     sys.exit( main() )
