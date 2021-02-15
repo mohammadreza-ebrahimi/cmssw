@@ -56,7 +56,8 @@ private:
   edm::ESHandle<FbcmGeometry> theFbcmGeom;
   
   int nbrOfDiesPerRing;
-  
+
+  TH1* hNEvents;
   
   TTree* theTree;
   TTree* FixedValuesTree;
@@ -153,7 +154,8 @@ FbcmNtuplizer_v2::FbcmNtuplizer_v2(const edm::ParameterSet& iConfig) :
   //theTree = fs->make<TTree>( iConfig.getParameter< string >("TreeName").c_str() , "all hits" );
   //theTree = fs->make<TTree>( "Pu" , "all hits" );
   FixedValuesTree = fs->make<TTree>( "GeometryInfo" , "FixedValues" );
-  
+  hNEvents = fs->make<TH1I>("hNEvents" , "" , 1 , 0 , 1 );
+
   Int_t split = 99;
   for (int i = 0 ; i < AREA_GROUP_LEN ; i++)
     SizeTest_tree[i] = fs->make<TTree>( ("SensorSize_"+std::to_string(i)).c_str() , ("Group"+std::to_string(i)).c_str() , split );
@@ -254,8 +256,13 @@ FbcmNtuplizer_v2::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   using namespace edm;
   using namespace std;
+
+  hNEvents->Fill( 0.5 );
+
   edm::Handle< edm::DetSetVector<SiPadDigiData> > handle;
   iEvent.getByToken(TokenTag_,handle);
+
+
   
   int tmp_nZeros;
   int nZerosPerEvntTMP[AREA_GROUP_LEN]; 

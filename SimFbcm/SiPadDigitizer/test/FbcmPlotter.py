@@ -25,6 +25,9 @@ def main():
 
         
     fIn = ROOT.TFile.Open( opt.infile )
+
+    nEvents = fIn.Get("FbcmNtuple/hNEvents").GetBinContent( 1 )
+    print(nEvents)
     
     geometryInfo = fIn.Get('FbcmNtuple/GeometryInfo')
 
