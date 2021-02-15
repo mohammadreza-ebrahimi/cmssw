@@ -45,6 +45,7 @@ def main():
             if  hit.DigiHitStatus[bx]==1:
                 digiHitsPerRho.Fill(hit.SensorRho )
     
+
 	simhitsPerRho.Divide( totalAreaPerRho )
 	digiHitsPerRho.Divide( totalAreaPerRho )
 	
@@ -53,8 +54,12 @@ def main():
 	digiHitsPerRho.Write()
 	#sensorsPerRho.Write()
 	#totalAreaPerRho.Write()
-	fout.Close()
-	return 0
+        simhitsPerRho.Scale( 1.0/7.0 )
+        digiHitsPerRho.Divide( totalAreaPerRho )
+        digiHitsPerRho.Scale( 1.0/3.0 )
+        fout.close()
+        return 0
+
 
 if __name__ == "__main__":
     sys.exit( main() )
