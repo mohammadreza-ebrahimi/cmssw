@@ -61,11 +61,8 @@ private:
   TTree* theTree;
   TTree* FixedValuesTree;
   TTree* SizeTest_tree[AREA_GROUP_LEN];
-  TTree*  Flux_Tree;
+  //  TTree*  Flux_Tree;
 
-  float EachSensorAreaVect[AREA_GROUP_LEN];
-  int nbrOfSenosrsVect[AREA_GROUP_LEN];
-  float TotalSensAreaPerGroup[AREA_GROUP_LEN];
 
   float SensorArea;
   float SensorRho;
@@ -113,8 +110,8 @@ private:
   float DigiToAs[MAX_DIGHIT_SIZE] ;
   float DigiToTs[MAX_DIGHIT_SIZE];
   
-/*
-  void resetValues(){
+  /*
+    void resetValues(){
     sensorRho = sensorArea = SIMTotalCharge = -1.0;
     // SIMTOA->clear();
     // SIMPt->clear();
@@ -123,17 +120,17 @@ private:
     nSIMParticles=0;
 
     for(int i=0; i < 100 ; i++){
-      SIMPdgIds[i] = 0;
-      SIMPts[i] = -100;
-      SIMCharges[i] = -100;
-      SIMTOAs[i] = -10000;
+    SIMPdgIds[i] = 0;
+    SIMPts[i] = -100;
+    SIMCharges[i] = -100;
+    SIMTOAs[i] = -10000;
     }
 
     for(int i=0; i<3; i++){
-      DIGIHitStatus[i] = -100;
-      DIGInHits[i] = -100;
+    DIGIHitStatus[i] = -100;
+    DIGInHits[i] = -100;
     }
-  };
+    };
   */
   void ZeroInitArrays();
 };
@@ -153,62 +150,61 @@ FbcmNtuplizer_v2::FbcmNtuplizer_v2(const edm::ParameterSet& iConfig) :
   TokenTag_(consumes< edm::DetSetVector<SiPadDigiData> >(iConfig.getParameter<edm::InputTag>("FbcmDigiTag")))
 {
   edm::Service<TFileService> fs;
-  theTree = fs->make<TTree>( iConfig.getParameter< string >("TreeName").c_str() , "all hits" );
+  //theTree = fs->make<TTree>( iConfig.getParameter< string >("TreeName").c_str() , "all hits" );
   //theTree = fs->make<TTree>( "Pu" , "all hits" );
-  FixedValuesTree = fs->make<TTree>( "ConstValues" , "FixedValues" );
+  FixedValuesTree = fs->make<TTree>( "GeometryInfo" , "FixedValues" );
   
   Int_t split = 99;
   for (int i = 0 ; i < AREA_GROUP_LEN ; i++)
-	SizeTest_tree[i] = fs->make<TTree>( ("SensorSize_"+std::to_string(i)).c_str() , ("Group"+std::to_string(i)).c_str() , split );
+    SizeTest_tree[i] = fs->make<TTree>( ("SensorSize_"+std::to_string(i)).c_str() , ("Group"+std::to_string(i)).c_str() , split );
   
-  Flux_Tree = fs->make<TTree>( "FluxInfo" , "FluxInfo" );
+  //Flux_Tree = fs->make<TTree>( "FluxInfo" , "FluxInfo" );
   
-//  resetValues();
+  //  resetValues();
   ZeroInitArrays();
   
   FixedValuesTree->Branch("EachSensorAreaVect" , EachSensorAreaVect , "EachSensorAreaVect[8]/F" );
   FixedValuesTree->Branch("nbrOfSenosrsVect" , nbrOfSenosrsVect , "nbrOfSenosrsVect[8]/I" );
   FixedValuesTree->Branch("TotalSensAreaPerGroup" , TotalSensAreaPerGroup , "TotalSensAreaPerGroup[8]/F" );
   FixedValuesTree->Branch("Sim_M_PerEvent" , Sim_M_PerEvent , "Sim_M_PerEvent[8]/I" );
-  FixedValuesTree->Branch("Digi_M_PerEvent" , Digi_M_PerEvent , "Digi_M_PerEvent[8]/I" );
-  
+  FixedValuesTree->Branch("Digi_M_PerEvent" , Digi_M_PerEvent , "Digi_M_PerEvent[8]/I" );  
   
   Int_t bsize = 32000; //default
 
   for (int i = 0 ; i < 8 ; i++) {
-	  SizeTest_tree[i]->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize );
-	  SizeTest_tree[i]->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  );
-	  //SizeTest_tree[i]->Branch("SimSumChargePerBx" , &SumChargePerBx , "SimSumChargePerBx/F");
+    SizeTest_tree[i]->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize );
+    SizeTest_tree[i]->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  );
+    //SizeTest_tree[i]->Branch("SimSumChargePerBx" , &SumChargePerBx , "SimSumChargePerBx/F");
 	  
-	  SizeTest_tree[i]->Branch("nSimParticles" , &nSimParticles);
-	  SizeTest_tree[i]->Branch("SimPdgId" , SimPdgIds , "SimPdgId[nSimParticles]/I" , bsize );
-	  SizeTest_tree[i]->Branch("SimPt" , SimPts , "SimPt[nSimParticles]/F" , bsize );
-	  SizeTest_tree[i]->Branch("SimCharge" , SimCharges , "SimCharge[nSimParticles]/F", bsize );
-	  SizeTest_tree[i]->Branch("SimTof" , SimTofs , "SimTof[nSimParticles]/F", bsize ); 
+    SizeTest_tree[i]->Branch("nSimParticles" , &nSimParticles);
+    SizeTest_tree[i]->Branch("SimPdgId" , SimPdgIds , "SimPdgId[nSimParticles]/I" , bsize );
+    SizeTest_tree[i]->Branch("SimPt" , SimPts , "SimPt[nSimParticles]/F" , bsize );
+    SizeTest_tree[i]->Branch("SimCharge" , SimCharges , "SimCharge[nSimParticles]/F", bsize );
+    SizeTest_tree[i]->Branch("SimTof" , SimTofs , "SimTof[nSimParticles]/F", bsize ); 
 	  
 	  
-	  SizeTest_tree[i]->Branch("SimTof_perBx" , SimTof_perBx , "SimTof_perBx[nSimParticles]/F", bsize ); 
+    SizeTest_tree[i]->Branch("SimTof_perBx" , SimTof_perBx , "SimTof_perBx[nSimParticles]/F", bsize ); 
 	  
-	  SizeTest_tree[i]->Branch("BxSlotCnt" , &BxSlotCnt);
-	  SizeTest_tree[i]->Branch("DigiHitStatus" , DigiHitStatus , "DigiHitStatus[BxSlotCnt]/I", bsize );
-	  SizeTest_tree[i]->Branch("nDigiHits" , nDigiHits , "nDigiHits[BxSlotCnt]/I" , bsize ); 
+    SizeTest_tree[i]->Branch("BxSlotCnt" , &BxSlotCnt);
+    SizeTest_tree[i]->Branch("DigiHitStatus" , DigiHitStatus , "DigiHitStatus[BxSlotCnt]/I", bsize );
+    SizeTest_tree[i]->Branch("nDigiHits" , nDigiHits , "nDigiHits[BxSlotCnt]/I" , bsize ); 
 	  
-	  SizeTest_tree[i]->Branch("nValidDigiToAs" , &nValidDigiToAs);
-	  SizeTest_tree[i]->Branch("nValidDigiToTs" , &nValidDigiToTs);
-	  SizeTest_tree[i]->Branch("DigiToA" , DigiToAs , "DigiToAs[nValidDigiToAs]/F" , bsize );
-	  SizeTest_tree[i]->Branch("DigiToT" , DigiToTs , "DigiToTs[nValidDigiToTs]/F", bsize );
+    SizeTest_tree[i]->Branch("nValidDigiToAs" , &nValidDigiToAs);
+    SizeTest_tree[i]->Branch("nValidDigiToTs" , &nValidDigiToTs);
+    SizeTest_tree[i]->Branch("DigiToA" , DigiToAs , "DigiToAs[nValidDigiToAs]/F" , bsize );
+    SizeTest_tree[i]->Branch("DigiToT" , DigiToTs , "DigiToTs[nValidDigiToTs]/F", bsize );
 	  
-}
+  }
 
-Flux_Tree->Branch("sum_nDigiHitsTest1" , &SimLambda[TEST_IND] , "sum_nDigiHitsTest1/F" );
-Flux_Tree->Branch("sum_nDigiHitsTest2" , &DigiLambda[TEST_IND] , "sum_nDigiHitsTest2/F" );
+  // Flux_Tree->Branch("sum_nDigiHitsTest1" , &SimLambda[TEST_IND] , "sum_nDigiHitsTest1/F" );
+  // Flux_Tree->Branch("sum_nDigiHitsTest2" , &DigiLambda[TEST_IND] , "sum_nDigiHitsTest2/F" );
 
-Flux_Tree->Branch("sum_nSimHits" , sum_nSimHitsPerEvnt , "sum_nSimHits[8]/I" );
-Flux_Tree->Branch("sum_nDigiHits" , sum_nDigiHitsPerEvnt , "sum_nDigiHits[8]/I" );
-Flux_Tree->Branch("SimLambda" , SimLambda , "SimLambda[8]/F" );
-Flux_Tree->Branch("DigiLambda" , DigiLambda , "DigiLambda[8]/F" );
-Flux_Tree->Branch("SimFlux" , SimFlux , "SimFlux[8]/F" );
-Flux_Tree->Branch("DigiFlux" , DigiFlux , "DigiFlux[8]/F" ); 
+  // Flux_Tree->Branch("sum_nSimHits" , sum_nSimHitsPerEvnt , "sum_nSimHits[8]/I" );
+  // Flux_Tree->Branch("sum_nDigiHits" , sum_nDigiHitsPerEvnt , "sum_nDigiHits[8]/I" );
+  // Flux_Tree->Branch("SimLambda" , SimLambda , "SimLambda[8]/F" );
+  // Flux_Tree->Branch("DigiLambda" , DigiLambda , "DigiLambda[8]/F" );
+  // Flux_Tree->Branch("SimFlux" , SimFlux , "SimFlux[8]/F" );
+  // Flux_Tree->Branch("DigiFlux" , DigiFlux , "DigiFlux[8]/F" ); 
 
 
   int nNonZerosPerEvnt[AREA_GROUP_LEN];
@@ -220,19 +216,19 @@ Flux_Tree->Branch("DigiLambdaZeroCounting" , DigiLambdaZeroCounting , "DigiLambd
 
 
 
-/*
-  theTree->Branch("SensorRho" , &sensorRho , "SensorRho/f[8,22]" );
-  theTree->Branch("SensorArea" , &sensorArea , "SensorArea/f[0.01,1.0]" );
-  theTree->Branch("SIMTotalCharge" , &SIMTotalCharge , "SIMTotalCharge/f");
-  theTree->Branch("nSIMParticles" , &nSIMParticles);
-  theTree->Branch("SIMPdgId" , SIMPdgIds , "SIMPdgId[nSIMParticles]/I" );
-  theTree->Branch("SIMPt" , SIMPts , "SIMPt[nSIMParticles]/F" );
-  theTree->Branch("SIMCharge" , SIMCharges , "SIMCharge[nSIMParticles]/F");
-  theTree->Branch("SIMTOA" , SIMTOAs , "SIMTOA[nSIMParticles]/F"); 
-  theTree->Branch("DIGInHits" , DIGInHits , "DIGInHits[3]/I" ); 
-  theTree->Branch("DIGIHitStatus" , DIGIHitStatus , "DIGIHitStatus[3]/I");
+  /*
+    theTree->Branch("SensorRho" , &sensorRho , "SensorRho/f[8,22]" );
+    theTree->Branch("SensorArea" , &sensorArea , "SensorArea/f[0.01,1.0]" );
+    theTree->Branch("SIMTotalCharge" , &SIMTotalCharge , "SIMTotalCharge/f");
+    theTree->Branch("nSIMParticles" , &nSIMParticles);
+    theTree->Branch("SIMPdgId" , SIMPdgIds , "SIMPdgId[nSIMParticles]/I" );
+    theTree->Branch("SIMPt" , SIMPts , "SIMPt[nSIMParticles]/F" );
+    theTree->Branch("SIMCharge" , SIMCharges , "SIMCharge[nSIMParticles]/F");
+    theTree->Branch("SIMTOA" , SIMTOAs , "SIMTOA[nSIMParticles]/F"); 
+    theTree->Branch("DIGInHits" , DIGInHits , "DIGInHits[3]/I" ); 
+    theTree->Branch("DIGIHitStatus" , DIGIHitStatus , "DIGIHitStatus[3]/I");
   
-*/
+  */
 	  
 }
 
@@ -279,48 +275,48 @@ int cnt=0;
   int SensorGroupIndex;
   for (edm::DetSetVector<SiPadDigiData>::const_iterator itDetSet = handle->begin() ;  itDetSet < handle->end() ; ++itDetSet) {
     // each Det in fbcmDets:
-	//std::cout<< "\nRaw DetID:  " << itDetSet->detId() << "\n"; // each detId --> multiple Data, but we have only one data
-      //char ss;
-	  //std::cin >> ss;
+    //std::cout<< "\nRaw DetID:  " << itDetSet->detId() << "\n"; // each detId --> multiple Data, but we have only one data
+    //char ss;
+    //std::cin >> ss;
 	  
-	if( itDetSet->size() != 1 )
+    if( itDetSet->size() != 1 )
       cout << "size == " << itDetSet->size() << endl; 
     for (std::vector<SiPadDigiData>::const_iterator Digidata_it = itDetSet->begin() ; Digidata_it < itDetSet->end() ; ++Digidata_it) {
       //const SiPadDigiData Digidata= *(Digidata_it);
       //std::cout << *(Digidata_it) ;
 	  cnt++;
 	  
-	  SiDieId=Digidata_it->SiliconDieIndex() ;
-	  SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
-	  //std::cout << SiDieId << " --> " << SensorGroupIndex << "\n";
+      SiDieId=Digidata_it->SiliconDieIndex() ;
+      SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
+      //std::cout << SiDieId << " --> " << SensorGroupIndex << "\n";
 	  
 	
 	  
-	  SensorRho=Digidata_it->Radius() ;
-	  SensorArea=Digidata_it->Area() ;
+      SensorRho=Digidata_it->Radius() ;
+      SensorArea=Digidata_it->Area() ;
 	  
-	  //SimBxChargeSum
+      //SimBxChargeSum
 	  	  
       //resetValues();
 
       //this->SIMTotalCharge = Digidata_it->ChargeSum();
 	 
-//	  float SimHitTime;
-	  nSimParticles = 0 ;
-	  //SumChargePerBx = 0.0;
+      //	  float SimHitTime;
+      nSimParticles = 0 ;
+      //SumChargePerBx = 0.0;
       for(auto sim : Digidata_it->CahrgePsimVector()){
-			SimPdgIds[nSimParticles] = sim.second.ParticleType() ;
-			SimPts[nSimParticles] = sim.second.Pabs() ;
-			SimTofs[nSimParticles] = sim.second.Tof() ;
-			SimCharges[nSimParticles] = sim.first;
+	SimPdgIds[nSimParticles] = sim.second.ParticleType() ;
+	SimPts[nSimParticles] = sim.second.Pabs() ;
+	SimTofs[nSimParticles] = sim.second.Tof() ;
+	SimCharges[nSimParticles] = sim.first;
 			
-			SimTof_perBx[nSimParticles] = sim.second.Tof() - 25.0 * sim.second.BunchCrossing() ;
-			//SimHitTime = sim.second.time() - 25.0 * sim.second.BunchCrossing() ;
+	SimTof_perBx[nSimParticles] = sim.second.Tof() - 25.0 * sim.second.BunchCrossing() ;
+	//SimHitTime = sim.second.time() - 25.0 * sim.second.BunchCrossing() ;
 
-			nSimParticles++;
+	nSimParticles++;
       }
 	  
-	  sum_nSimHitsPerEvnt[SensorGroupIndex] += nSimParticles;
+      sum_nSimHitsPerEvnt[SensorGroupIndex] += nSimParticles;
 	  
 	  nValidDigiToAs = 0;
 	  nValidDigiToTs = 0;
@@ -331,9 +327,9 @@ int cnt=0;
 	  
 	  BxSlotCnt=0; // just to make sure starting from non-zero index if in the case of using BxSlotNo < 0. 
       for(auto hit : Digidata_it->BxSlotHitAnalysisVector() ) {	  
-		DigiHitStatus[BxSlotCnt] = hit.Bx_HitStatusInt();
-		nDigiHits[BxSlotCnt] = hit.nbrOfRecognizedHitsInBx(); 
-		BxSlotCnt++;
+	DigiHitStatus[BxSlotCnt] = hit.Bx_HitStatusInt();
+	nDigiHits[BxSlotCnt] = hit.nbrOfRecognizedHitsInBx(); 
+	BxSlotCnt++;
 		
 		nDigiNonZeros += (int)(hit.Bx_HitStatusInt() == HitStatus::NonZero);
 		nDigiUncertains += (int)(hit.Bx_HitStatusInt() == HitStatus::Uncertain); 
@@ -341,20 +337,21 @@ int cnt=0;
 		
 		for (auto ToaTot : hit.TotToaVectort()) {
 			if ( (ToaTot.ToAToAStatusInt() == ToAStatus::FullyWithinBx || ToaTot.ToAToAStatusInt() == ToAStatus::WithinBx_LastsAfter ) ) {
-				
-				DigiToAs[nValidDigiToAs++] = ToaTot.ToA();
-				if (ToaTot.IsToTValid())
-					DigiToTs[nValidDigiToTs++] = ToaTot.ToT();
-			}
-		}
+	    DigiToAs[nValidDigiToAs++] = ToaTot.ToA();
+	    if (ToaTot.IsToTValid())
+	      DigiToTs[nValidDigiToTs++] = ToaTot.ToT();
+	  }
+	}
 		
       }
 	  sum_nDigiHitsPerEvnt[SensorGroupIndex] += nValidDigiToAs;
 	  nNonZerosPerEvnt[SensorGroupIndex] += nDigiNonZeros;
 	  nUncertainsPerEvnt[SensorGroupIndex] += nDigiUncertains;
 	  nZerosPerEvntTMP[SensorGroupIndex] += tmp_nZeros;
+
+
       //theTree->Fill();
-	  SizeTest_tree[SensorGroupIndex]->Fill();
+      SizeTest_tree[SensorGroupIndex]->Fill();
       //std::cout << "detected raw ID: " << fbdetId.rawId() << "  : ";
       //std::cout << fbdetId;
 					
@@ -367,6 +364,7 @@ int cnt=0;
 
 //std::cout << "Digi_M          nNonZeros       nUncertains  nZerosTMP  SumZeroUncertNonZero   nZeroOrg "  << cnt << " \n";
 
+/*
   for (int i =0 ; i < AREA_GROUP_LEN ; i++) {
 	SimLambda[i] = (float)sum_nSimHitsPerEvnt[i]/Sim_M_PerEvent[i];
     DigiLambda[i] = (float)sum_nDigiHitsPerEvnt[i]/(Digi_M_PerEvent[i]-nUncertainsPerEvnt[i]);
@@ -387,8 +385,18 @@ int cnt=0;
 		//std::cout << Digi_M_PerEvent[i] << "\t" << nNonZerosPerEvnt[i] << "\t" << nUncertainsPerEvnt[i]  << "\t" << nZerosPerEvntTMP[i] <<"\t"<< nZerosPerEvntTMP[i] + nUncertainsPerEvnt[i] + nNonZerosPerEvnt[i] << "\t" << nZerosPerEvnt[i] <<"\n";
   }
   //std::cout << "\n";
+=======
   
-  Flux_Tree->Fill(); 
+  // for (int i =0 ; i < AREA_GROUP_LEN ; i++) {
+  //   SimLambda[i] = (float)sum_nSimHitsPerEvnt[i]/nbrOfSenosrsVect[i]/7.0;
+  //   DigiLambda[i] = (float)sum_nDigiHitsPerEvnt[i]/nbrOfSenosrsVect[i]/3.0;
+  //   SimFlux[i] = (float) sum_nSimHitsPerEvnt[i]/TotalSensAreaPerGroup[i]/7.0; // devided by 7 due to 7 bunch crossings
+  //   DigiFlux[i] = (float) sum_nDigiHitsPerEvnt[i]/TotalSensAreaPerGroup[i]/3.0; // devided by 3 because we had consdered only 3 BXs, i.e. {0,1,2},  in the Digi
+	
+  // }
+>>>>>>> f2cb6878497 (FbcmPlotter added)
+*/  
+ // Flux_Tree->Fill(); 
 
 }
 
@@ -408,33 +416,36 @@ FbcmNtuplizer_v2::endJob()
 
 // ------------ method called when starting to processes a run  ------------
 
-  void FbcmNtuplizer_v2::beginRun(edm::Run const&, edm::EventSetup const& iSetup) {
-	  iSetup.get<FbcmGeometryRecord>().get(theFbcmGeom); 
-	  const std::vector<const FbcmStationGeom*> AllStatitons = theFbcmGeom->Stations();
-	  int NbrOfStations = theFbcmGeom->NumOfStations()*2; // NumOfStations() just reports per end
-	  const FbcmStationGeom * OneStationPtr= AllStatitons[0]; // get the first station for an instance
-	  std::vector<const FbcmSiliconDieGeom*> SiDiesPerStation = OneStationPtr->SiliconDies();
-	  nbrOfDiesPerRing = OneStationPtr->NumOfDiesPerRing(); 
-	  
-	  int SiDieId=0;
-	  int SensorGroupIndex=0;
-	for(std::vector<const FbcmSiliconDieGeom*>::iterator Die_it = SiDiesPerStation.begin(); Die_it != SiDiesPerStation.end(); ++Die_it) {
-		SiDieId=(*Die_it)->id().SiliconDie();
-		SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
-		nbrOfSenosrsVect[SensorGroupIndex] += (*Die_it)->NumOfRows() * (*Die_it)->NumOfCols();
-		}
+void FbcmNtuplizer_v2::beginRun(edm::Run const&, edm::EventSetup const& iSetup) {
+  iSetup.get<FbcmGeometryRecord>().get(theFbcmGeom); 
+  const std::vector<const FbcmStationGeom*> AllStatitons = theFbcmGeom->Stations();
+  nbrOfDiesPerRing = AllStatitons[0]->NumOfDiesPerRing(); 
 
-	for (int i=0 ; i < AREA_GROUP_LEN ; i++)
-		nbrOfSenosrsVect[i] *= NbrOfStations;
 
-	const FbcmSiPadGeom* SiPadGeomPtr;
-	std::pair<float, float> SiPadDimension ;
-	for (int i=0 ; i < AREA_GROUP_LEN ; i++) {
-		SiPadGeomPtr = SiDiesPerStation[i]->SiPads()[0];
-		SiPadDimension = SiPadGeomPtr->SiPadTopology().pitch();
-		EachSensorAreaVect[i]=SiPadDimension.first * SiPadDimension.second;
+  int SiDieId=0;
+  int SensorGroupIndex=0;
+  float padX, padY , padRho;
+
+  FixedValuesTree->Branch("SensorGroupIndex" , &SensorGroupIndex );
+  FixedValuesTree->Branch("SensorX" , &padX );
+  FixedValuesTree->Branch("SensorY" , &padY );
+  FixedValuesTree->Branch("SensorRho" , &padRho );
+
+  for(int side=0 ; side < 2 ; side++)
+    for(auto station: AllStatitons){
+      for(auto die: station->SiliconDies()){
+	SiDieId=die->id().SiliconDie();
+	SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
+
+	for (auto siPad : die->SiPads() ){
+	  std::pair<float, float> SiPadDimension = siPad->SiPadTopology().pitch();
+
+	  padX = SiPadDimension.first;
+	  padY = SiPadDimension.second;
+	  padRho = 0; 
+		  
+	  FixedValuesTree->Fill();
 	}
-		
 	for (int i=0 ; i < AREA_GROUP_LEN ; i++) {
 		TotalSensAreaPerGroup[i] = nbrOfSenosrsVect[i] * EachSensorAreaVect[i] ;
 		//std::cout << nbrOfSenosrsVect[i] << " \t";
@@ -450,15 +461,15 @@ FbcmNtuplizer_v2::endJob()
 	
 	FixedValuesTree->Fill();
   
-  }
+}
 
 void FbcmNtuplizer_v2::ZeroInitArrays(){
 
-	for (int i=0 ; i< AREA_GROUP_LEN ; i++) {
-	nbrOfSenosrsVect[i]=0;
-	EachSensorAreaVect[i]=0.0;
-	TotalSensAreaPerGroup[i]=0.0;
-	}
+  // for (int i=0 ; i< AREA_GROUP_LEN ; i++) {
+  //   nbrOfSenosrsVect[i]=0;
+  //   EachSensorAreaVect[i]=0.0;
+  //   TotalSensAreaPerGroup[i]=0.0;
+  // }
 }
 
 // ------------ method called when ending the processing of a run  ------------
