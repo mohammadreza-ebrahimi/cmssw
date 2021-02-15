@@ -37,27 +37,36 @@ def main():
     totalAreaPerRho = ROOT.TH1D("hTotalAreaPerRho" , "" , 30 , 0 , 30 )
     geometryInfo.Draw("SensorRho >> hTotalAreaPerRho" , "SensorX*SensorY*(SensorGroupIndex=={0})".format( opt.SensorGroupIndex ) )
 
+    totalEffectiveAreaPerRho = totalAreaPerRho.Clone("totalEffectiveAreaPerRho")
+    totalEffectiveAreaPerRho.Scale( 3.0*nEvents)
+
     allHits = fIn.Get('FbcmNtuple/SensorSize_{0}'.format( opt.SensorGroupIndex ) )
     simhitsPerRho = ROOT.TH1D("hSimHitsPerRho" , "Sim Hits per rho" , 30 , 0 , 30 )
     digiHitsPerRho = ROOT.TH1D("hDigiHitsPerRho" , "Digi Hits per rho" , 30 , 0 , 30 )
 
     for hit in allHits:
         simhitsPerRho.Fill( hit.SensorRho, hit.nSimParticles )
+        digiHitsPerRho.Fill(hit.SensorRho , hit.nValidDigiToAs )
 
         for bx in range(3):
-            if  hit.DigiHitStatus[bx]==1:
-                digiHitsPerRho.Fill(hit.SensorRho )
+            if  hit.DigiHitStatus[bx]==-1:
+                totalEffectiveAreaPerRho.Fill( hit.SensorRho , -hit.SensorArea )
     
 	simhitsPerRho.Divide( totalAreaPerRho )
 	digiHitsPerRho.Divide( totalAreaPerRho )
-	
-	fout = ROOT.TFile.Open( opt.outfile , "recreate")
-	simhitsPerRho.Write()
-	digiHitsPerRho.Write()
 	#sensorsPerRho.Write()
 	#totalAreaPerRho.Write()
-        simhitsPerRho.Scale( 1.0/7.0 )
-        digiHitsPerRho.Scale( 1.0/3.0 )
+        simhitsPerRho.Scale( 1.0/7.0/nEvents )
+
+        totalEffectiveAreaPerRho.Scale( 1.0/nEvents/3.0 )
+        digiHitsPerRho.Divide( totalEffectiveAreaPerRho )
+        digiHitsPerRho.Scale( 1.0/3.0/nEvents )
+
+        fout = ROOT.TFile.Open( opt.outfile , "recreate")
+        simhitsPerRho.Write()
+        digiHitsPerRho.Write()
+
+        totalAreaPerRho.Write()
         fout.Close()
         return 0
 
