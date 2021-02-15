@@ -4,7 +4,7 @@ process = cms.Process("ntuple")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.load('Configuration.Geometry.GeometryExtended2026D80_cff')
 process.load('Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi')

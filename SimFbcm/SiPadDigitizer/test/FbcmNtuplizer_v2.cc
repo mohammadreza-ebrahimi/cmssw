@@ -419,8 +419,11 @@ FbcmNtuplizer_v2::endJob()
 void FbcmNtuplizer_v2::beginRun(edm::Run const&, edm::EventSetup const& iSetup) {
   iSetup.get<FbcmGeometryRecord>().get(theFbcmGeom); 
   const std::vector<const FbcmStationGeom*> AllStatitons = theFbcmGeom->Stations();
+  const std::vector<FbcmSiPadGeom const*> allSiPadGeoms = theFbcmGeom->SiPads();
   nbrOfDiesPerRing = AllStatitons[0]->NumOfDiesPerRing(); 
 
+
+  //std::cout << "Total Num of Stations: " << AllStatitons.size() << "\n";
 
   int SiDieId=0;
   int SensorGroupIndex=0;
@@ -431,19 +434,25 @@ void FbcmNtuplizer_v2::beginRun(edm::Run const&, edm::EventSetup const& iSetup) 
   FixedValuesTree->Branch("SensorY" , &padY );
   FixedValuesTree->Branch("SensorRho" , &padRho );
 
-  for(int side=0 ; side < 2 ; side++)
-    for(auto station: AllStatitons){
-      for(auto die: station->SiliconDies()){
-	SiDieId=die->id().SiliconDie();
-	SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
+//  for(int side=0 ; side < 0 ; side++) // since "AllStatitons" includes all stations in both ends (+z/-z), so this loop make a wrong number. 
+//    for(auto station: AllStatitons){
+//      for(auto die: station->SiliconDies()){
+//	SiDieId=die->id().SiliconDie();
+//	SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
 
-	for (auto siPad : die->SiPads() ){
+//	for (auto siPad : die->SiPads() )
+	for(const auto& siPad : allSiPadGeoms)
+	{
 	  std::pair<float, float> SiPadDimension = siPad->SiPadTopology().pitch();
 
 	  padX = SiPadDimension.first;
 	  padY = SiPadDimension.second;
-	  padRho = 0; 
-		  
+	  // we could also store only the Area instead of padX and padY
+	  padRho = siPad->surface().position().perp(); 
+	  
+	  SiDieId=siPad->id().SiliconDie();
+      SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
+	  
 	  FixedValuesTree->Fill();
 	}
 	for (int i=0 ; i < AREA_GROUP_LEN ; i++) {
