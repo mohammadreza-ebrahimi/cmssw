@@ -53,8 +53,10 @@ def main():
 	digiHitsPerRho.Write()
 	#sensorsPerRho.Write()
 	#totalAreaPerRho.Write()
-	fout.Close()
-	return 0
+        simhitsPerRho.Scale( 1.0/7.0 )
+        digiHitsPerRho.Scale( 1.0/3.0 )
+        fout.Close()
+        return 0
 
 if __name__ == "__main__":
     sys.exit( main() )
