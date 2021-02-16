@@ -22,14 +22,13 @@ options = VarParsing ('analysis')
 options.register ('PU',
                   1,
                   VarParsing.multiplicity.singleton,
-                  VarParsing.varType.float,
+                  VarParsing.varType.string,
                   "puvalue")
 options.parseArguments()
 
 process.FbcmNtuple = cms.EDAnalyzer('FbcmNtuplizer_v3',
                                     FbcmDigiTag = cms.InputTag("simFbcmDigis", "SiPad"),
                                     #FbcmDigiTag = cms.InputTag("simFbcmDigis"),
-                                    PU = cms.double( options.PU ),
                                     TreeName = cms.string( 'PU{0}'.format(options.PU) )
 )
 

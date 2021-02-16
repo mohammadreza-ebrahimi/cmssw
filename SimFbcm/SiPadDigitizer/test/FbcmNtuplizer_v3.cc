@@ -107,22 +107,22 @@ FbcmNtuplizer_v3::FbcmNtuplizer_v3(const edm::ParameterSet& iConfig) :
 
   Int_t bsize = 32000; //default
 
-    theTree->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize );
-    theTree->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  );
-    theTree->Branch("nSimParticles" , &nSimParticles);
-	theTree->Branch("SensorGroupIndex" , &SensorGroupIndex);
-    theTree->Branch("SimPdgId" , SimPdgIds , "SimPdgId[nSimParticles]/I" , bsize );
-    theTree->Branch("SimPt" , SimPts , "SimPt[nSimParticles]/F" , bsize );
-    theTree->Branch("SimCharge" , SimCharges , "SimCharge[nSimParticles]/F", bsize );
-    theTree->Branch("SimTof" , SimTofs , "SimTof[nSimParticles]/F", bsize ); 
-    theTree->Branch("SimTof_perBx" , SimTof_perBx , "SimTof_perBx[nSimParticles]/F", bsize ); 
-    theTree->Branch("BxSlotCnt" , &BxSlotCnt);
-    theTree->Branch("DigiHitStatus" , DigiHitStatus , "DigiHitStatus[BxSlotCnt]/I", bsize );
-    theTree->Branch("nDigiHits" , nDigiHits , "nDigiHits[BxSlotCnt]/I" , bsize ); 
-    theTree->Branch("nValidDigiToAs" , &nValidDigiToAs);
-    theTree->Branch("nValidDigiToTs" , &nValidDigiToTs);
-    theTree->Branch("DigiToA" , DigiToAs , "DigiToAs[nValidDigiToAs]/F" , bsize );
-    theTree->Branch("DigiToT" , DigiToTs , "DigiToTs[nValidDigiToTs]/F", bsize );
+  theTree->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize );
+  theTree->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  );
+  theTree->Branch("nSimParticles" , &nSimParticles);
+  theTree->Branch("SensorGroupIndex" , &SensorGroupIndex);
+  theTree->Branch("SimPdgId" , SimPdgIds , "SimPdgId[nSimParticles]/I" , bsize );
+  theTree->Branch("SimPt" , SimPts , "SimPt[nSimParticles]/F" , bsize );
+  theTree->Branch("SimCharge" , SimCharges , "SimCharge[nSimParticles]/F", bsize );
+  theTree->Branch("SimTof" , SimTofs , "SimTof[nSimParticles]/F", bsize ); 
+  theTree->Branch("SimTof_perBx" , SimTof_perBx , "SimTof_perBx[nSimParticles]/F", bsize ); 
+  theTree->Branch("BxSlotCnt" , &BxSlotCnt);
+  theTree->Branch("DigiHitStatus" , DigiHitStatus , "DigiHitStatus[BxSlotCnt]/I", bsize );
+  theTree->Branch("nDigiHits" , nDigiHits , "nDigiHits[BxSlotCnt]/I" , bsize ); 
+  theTree->Branch("nValidDigiToAs" , &nValidDigiToAs);
+  theTree->Branch("nValidDigiToTs" , &nValidDigiToTs);
+  theTree->Branch("DigiToA" , DigiToAs , "DigiToAs[nValidDigiToAs]/F" , bsize );
+  theTree->Branch("DigiToT" , DigiToTs , "DigiToTs[nValidDigiToTs]/F", bsize );
 	
 }
 
@@ -169,13 +169,13 @@ FbcmNtuplizer_v3::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
       nSimParticles = 0 ; 
       for(auto sim : Digidata_it->CahrgePsimVector()) {
-		SimPdgIds[nSimParticles] = sim.second.ParticleType() ;
-		SimPts[nSimParticles] = sim.second.Pabs() ;
-		SimTofs[nSimParticles] = sim.second.Tof() ;
-		SimCharges[nSimParticles] = sim.first;
-		SimTof_perBx[nSimParticles] = sim.second.Tof() - 25.0 * sim.second.BunchCrossing() ;
-		//SimHitTime = sim.second.time() - 25.0 * sim.second.BunchCrossing() ;
-		nSimParticles++;
+	SimPdgIds[nSimParticles] = sim.second.ParticleType() ;
+	SimPts[nSimParticles] = sim.second.Pabs() ;
+	SimTofs[nSimParticles] = sim.second.Tof() ;
+	SimCharges[nSimParticles] = sim.first;
+	SimTof_perBx[nSimParticles] = sim.second.Tof() - 25.0 * sim.second.BunchCrossing() ;
+	//SimHitTime = sim.second.time() - 25.0 * sim.second.BunchCrossing() ;
+	nSimParticles++;
       }
  
       nValidDigiToAs=0;
@@ -183,17 +183,17 @@ FbcmNtuplizer_v3::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  
       BxSlotCnt=0; // just to make sure starting from non-zero index if in the case of using BxSlotNo < 0. 
       for(auto hit : Digidata_it->BxSlotHitAnalysisVector() ) {	  
-		DigiHitStatus[BxSlotCnt] = hit.Bx_HitStatusInt();
-		nDigiHits[BxSlotCnt] = hit.nbrOfRecognizedHitsInBx(); 
-		BxSlotCnt++;
+	DigiHitStatus[BxSlotCnt] = hit.Bx_HitStatusInt();
+	nDigiHits[BxSlotCnt] = hit.nbrOfRecognizedHitsInBx(); 
+	BxSlotCnt++;
 			
-		for (auto ToaTot : hit.TotToaVectort()) {
-			if ( (ToaTot.ToAToAStatusInt() == ToAStatus::FullyWithinBx || ToaTot.ToAToAStatusInt() == ToAStatus::WithinBx_LastsAfter ) ) {
-			DigiToAs[nValidDigiToAs++] = ToaTot.ToA();
-			if (ToaTot.IsToTValid())
-				DigiToTs[nValidDigiToTs++] = ToaTot.ToT();
-			}
-		}
+	for (auto ToaTot : hit.TotToaVectort()) {
+	  if ( (ToaTot.ToAToAStatusInt() == ToAStatus::FullyWithinBx || ToaTot.ToAToAStatusInt() == ToAStatus::WithinBx_LastsAfter ) ) {
+	    DigiToAs[nValidDigiToAs++] = ToaTot.ToA();
+	    if (ToaTot.IsToTValid())
+	      DigiToTs[nValidDigiToTs++] = ToaTot.ToT();
+	  }
+	}
 		
       }
  
@@ -239,19 +239,19 @@ void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) 
   FixedValuesTree->Branch("SensorRho" , &padRho );
 
   for(const auto& siPad : allSiPadGeoms)
-	{
-	  std::pair<float, float> SiPadDimension = siPad->SiPadTopology().pitch();
+    {
+      std::pair<float, float> SiPadDimension = siPad->SiPadTopology().pitch();
 
-	  padX = SiPadDimension.first;
-	  padY = SiPadDimension.second;
-	  // we could also store only the Area instead of padX and padY
-	  padRho = siPad->surface().position().perp(); 
+      padX = SiPadDimension.first;
+      padY = SiPadDimension.second;
+      // we could also store only the Area instead of padX and padY
+      padRho = siPad->surface().position().perp(); 
 	  
-	  SiDieId=siPad->id().SiliconDie();
+      SiDieId=siPad->id().SiliconDie();
       SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
 	  
-	  FixedValuesTree->Fill();
-	}
+      FixedValuesTree->Fill();
+    }
 }
 
 
