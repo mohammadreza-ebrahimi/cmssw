@@ -29,10 +29,12 @@ class SensorGroupInformation:
         
         self.nSimHits = self.MakeHistoPerRho('nSimHits' , 'number of sim hits' )
         self.nDigiHits = self.MakeHistoPerRho('nDigiHits' , 'number of digi hits' )
+        self.nDigiHitsV2 = self.MakeHistoPerRho('nDigiHitsV2' , 'number of digi hits when unknowns were ignored' )
         self.nOnes = self.MakeHistoPerRho( 'nOnes' , 'number of Ones' )
         self.nUnknowns = self.MakeHistoPerRho('nUnknowns' , 'number of unknowns')
 
         self.TofRho = self.Make2DHistoPerRho( 'TofRho' , ';Rho;ToF' , 300 , -150 , 150 )
+        self.BxTofRho = self.Make2DHistoPerRho( 'BxTofRho' , ';Rho;ToF' , 300 , -150 , 150 )
         self.ToaRho = self.Make2DHistoPerRho( 'ToaRho' , ';Rho;ToA' , 300 , -150 , 150 )
         self.TotRho = self.Make2DHistoPerRho( 'TotRho' , ';Rho;ToT' , 300 , -150 , 150 )
 
@@ -54,12 +56,15 @@ class SensorGroupInformation:
 
         for spart in range( hit.nSimParticles ):
             self.TofRho.Fill( hit.SensorRho, hit.SimTof[spart] )
+            self.BxTofRho.Fill( hit.SensorRho, hit.SimTof_perBx[spart] )
 
         for bx in range(3):
             if  hit.DigiHitStatus[bx]==-1:
                 self.nUnknowns.Fill( hit.SensorRho )
             elif hit.DigiHitStatus[bx] == 1:
                 self.nOnes.Fill( hit.SensorRho )
+                self.nDigiHitsV2.Fill(hit.SensorRho, hit.nDigiHits[bx])
+			
 
         for i in hit.DigiToA:
             self.ToaRho.Fill( hit.SensorRho , i )
@@ -71,6 +76,7 @@ class SensorGroupInformation:
         
         self.nSimHits.Write()
         self.nDigiHits.Write()
+        self.nDigiHitsV2.Write()
         self.nOnes.Write()
         self.nUnknowns.Write()
         
@@ -82,6 +88,7 @@ class SensorGroupInformation:
         self.TotRho.Write()
         self.ToaRho.Write()
         self.TofRho.Write()
+        self.BxTofRho.Write()
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
