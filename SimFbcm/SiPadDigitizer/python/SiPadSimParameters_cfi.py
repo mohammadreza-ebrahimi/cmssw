@@ -12,6 +12,7 @@ SiPadSimBlock = cms.PSet(
 	
 	PseudoRadDamage = cms.untracked.double(0.0),
 	PseudoRadDamageRadius = cms.untracked.double(0.0),
+	chargeCollectionEfficiency = cms.double(1.0),
 	#FluctuateCharge = cms.untracked.bool(True), # Fluctuate charge in track subsegments, by default should be True. 
 	DeltaProductionCut = cms.double(0.03),   # delta cutoff in MeV, has to be same as in OSCAR(0.030/cmsim=1.0 MeV)  // tMax(0.030) In MeV.
 	AddNoise = cms.bool(True),

@@ -136,6 +136,7 @@ protected:
   // pseudoRadDamage
   const double pseudoRadDamage;        // Decrease the amount off freed charge that reaches the collector
   const double pseudoRadDamageRadius;  // Only apply pseudoRadDamage to pixels with radius<=pseudoRadDamageRadius
+  const double chargeCollectionEff; //  chargeCollectionEfficiency
 
   bool FilterHit(const PSimHit& hit, double tCorr); 
   

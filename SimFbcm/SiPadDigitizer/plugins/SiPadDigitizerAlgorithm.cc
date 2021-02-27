@@ -49,7 +49,9 @@ SiPadDigitizerAlgorithm::SiPadDigitizerAlgorithm(const edm::ParameterSet& conf) 
     fluctuate(fluctuateCharge ? new SiG4UniversalFluctuation() : nullptr),
 	// Add some pseudo-red damage	
     pseudoRadDamage(conf_specific.getUntrackedParameter<double>("PseudoRadDamage", 0.0)),
-	pseudoRadDamageRadius(conf_specific.getUntrackedParameter<double>("PseudoRadDamageRadius", 0.0))  {
+	pseudoRadDamageRadius(conf_specific.getUntrackedParameter<double>("PseudoRadDamageRadius", 0.0)),
+	chargeCollectionEff(conf_specific.getParameter<double>("chargeCollectionEfficiency"))
+	{
 
 	LogInfo("SiPadDigitizerAlgorithm") << "SiPadDigitizerAlgorithm constructed\n" ;
 }
@@ -601,12 +603,13 @@ FbcmDetId SiPadDetId(detID);
   for (auto const& s : theSignal) // loop over channels ?? // by default one SiPad has one channel 
   {
 	const CommonDigiUtility::Amplitude& sig_data = s.second;
-	float signalInElectrons = sig_data.ampl();
+	float signalInElectrons = sig_data.ampl()*chargeCollectionEff;
 	BXC_CahrgePSim_Vect.clear();
 	Tof_Q_pairVect.clear();
 	for (auto const& l : sig_data.simInfoList()) {
-		BXC_CahrgePSim_Vect.push_back({l.first,*(l.second)}); // first: charge, second: PSimHit
-		Tof_Q_pairVect.emplace_back(std::make_pair( l.second->time() , l.first ));
+		float PsimCharge_= l.first*chargeCollectionEff;
+		BXC_CahrgePSim_Vect.push_back({PsimCharge_,*(l.second)}); // first: charge, second: PSimHit
+		Tof_Q_pairVect.emplace_back(std::make_pair( l.second->time() , PsimCharge_ ));
         }
 		
 	SiPadDimension = SiPadGeom->SiPadTopology().pitch();
