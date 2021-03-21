@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: --evt_type SingleNuE10_cfi -s GEN,SIM,DIGI --mc --fileout file:GEN_SIM_DIGI.root --conditions auto:phase2_realistic --pileup_input file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root --pileup "AVE_200_BX_25ns,{'B':(-3,3),'N':1.5}" --era Phase2,fbcmDigi,OnlyfbcmDigi --datatier GEN-SIM-DIGI-RAW --geometry Extended2026D80 --eventcontent FEVTDEBUG --python_filename GEN_SIM_DIGI_cfg.py --customise SimFbcm/SiPadDigitizer/aging._1000invfb,Configuration/DataProcessing/Utils.addMonitoring --nThreads 2 -n 2 --no_exe
+# with command line options: --evt_type SingleNuE10_cfi -s GEN,SIM,DIGI --mc --fileout file:GEN_SIM_DIGI.root --conditions auto:phase2_realistic --pileup_input file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root --pileup "AVE_200_BX_25ns,{'B':(-3,3),'N':1.5}" --era Phase2,fbcmDigi,OnlyfbcmDigi --datatier GEN-SIM-DIGI-RAW --geometry Extended2026D80 --eventcontent FEVTDEBUG --python_filename GEN_SIM_DIGI_cfg.py --customise SimFbcm/SiPadDigitizer/aging.no_aging,Configuration/DataProcessing/Utils.addMonitoring --nThreads 2 -n 2 --no_exe
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Phase2_cff import Phase2
@@ -138,10 +138,10 @@ for path in process.paths:
 # customisation of the process.
 
 # Automatic addition of the customisation function from SimFbcm.SiPadDigitizer.aging
-from SimFbcm.SiPadDigitizer.aging import _1000invfb 
+from SimFbcm.SiPadDigitizer.aging import no_aging 
 
-#call to customisation function _1000invfb imported from SimFbcm.SiPadDigitizer.aging
-process = _1000invfb(process)
+#call to customisation function no_aging imported from SimFbcm.SiPadDigitizer.aging
+process = no_aging(process)
 
 # Automatic addition of the customisation function from Configuration.DataProcessing.Utils
 from Configuration.DataProcessing.Utils import addMonitoring 
