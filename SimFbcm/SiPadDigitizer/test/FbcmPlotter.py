@@ -32,11 +32,11 @@ class SensorGroupInformation:
         self.nDigiHitsV2 = self.MakeHistoPerRho('nDigiHitsV2' , 'number of digi hits when unknowns were ignored' )
         self.nOnes = self.MakeHistoPerRho( 'nOnes' , 'number of Ones' )
         self.nUnknowns = self.MakeHistoPerRho('nUnknowns' , 'number of unknowns')
-
-        self.TofRho = self.Make2DHistoPerRho( 'TofRho' , ';Rho;ToF' , 300 , -150 , 150 )
-        self.BxTofRho = self.Make2DHistoPerRho( 'BxTofRho' , ';Rho;ToF' , 300 , -150 , 150 )
-        self.ToaRho = self.Make2DHistoPerRho( 'ToaRho' , ';Rho;ToA' , 300 , -150 , 150 )
-        self.TotRho = self.Make2DHistoPerRho( 'TotRho' , ';Rho;ToT' , 300 , -150 , 150 )
+        
+        self.TofRho = self.Make2DHistoPerRho( 'TofRho' , ';Rho;ToF' , int(round(200./(25./32./7.))) , -100 , 100 )
+        self.BxTofRho = self.Make2DHistoPerRho( 'BxTofRho' , ';Rho;ToF' , int(round(30./(25./32./7.))) , -15. , 15. )
+        self.ToaRho = self.Make2DHistoPerRho( 'ToaRho' , ';Rho;ToA' , int(round(30./(25./32./7.))) , -15. , 15. )
+        self.TotRho = self.Make2DHistoPerRho( 'TotRho' , ';Rho;ToT' , int(round(200./(25./32./7.))) , 0. , 200. )
 
     def FillGeometry(self , geoTree ):
         for entry in geoTree:
