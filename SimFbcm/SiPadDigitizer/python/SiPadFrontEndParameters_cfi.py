@@ -6,8 +6,8 @@ fftSimParam = cms.PSet(
 	SamplingRepetition = cms.int32(10) # FS: Sampling repetition per ns [1/ns]
 )
 TofCharge_Test = cms.PSet(
-	TofVector =  cms.vdouble(0.0, 25.2), 
-	ChargeVect = cms.vdouble(3*6242, 8000),
+	TofVector =  cms.vdouble(0.0, 35.0), 
+	ChargeVect = cms.vdouble(3*6242, 3*6242),
 	TestSensorSize= cms.double(0.04) # cm2
 )
 
