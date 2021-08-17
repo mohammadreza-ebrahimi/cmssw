@@ -65,7 +65,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
 	void FbcmFrontEndChip::printInfo_with_AlignedTime(){
        SignalType & timeVectAligned_=Hit_Analyzer.GetAlignedTimeVect();
         std::ofstream myfile;
-      myfile.open ("/afs/cern.ch/work/m/msedghi/CMSSW_11_0_0/src/SimTracker/SiPadDigitizer/Result.txt");
+      myfile.open ("/afs/cern.ch/work/m/msedghi/private/tempOutputs/Result.txt");
 
         for (unsigned int i=0; i < nFFT_; i++ )
             myfile << timeVectAligned_[i] << "\t"

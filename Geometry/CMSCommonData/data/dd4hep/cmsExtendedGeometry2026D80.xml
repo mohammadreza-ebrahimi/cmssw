@@ -41,8 +41,8 @@
     <Include ref='Geometry/TrackerSimData/data/PhaseII/Tracker_DD4hep_compatible_2021_02/trackerProdCuts.xml'/>
     <Include ref='Geometry/TrackerSimData/data/PhaseII/Tracker_DD4hep_compatible_IT702_2021_03/pixelProdCuts.xml'/>
     <Include ref='Geometry/FbcmCommonData/data/PhaseII/FbcmVolume/cmsFbcm.xml'/>
-    <Include ref='Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v1/fbcm.xml'/>
-    <Include ref='Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v1/FbcmSpecs.xml'/>
+    <Include ref='Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v2/fbcm.xml'/>
+    <Include ref='Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v2/FbcmSpecs.xml'/>
     <Include ref='Geometry/FbcmSimData/data/PhaseII/FbcmSens.xml'/>
     <Include ref='Geometry/TrackerCommonData/data/PhaseII/trackerParameters.xml'/>
     <Include ref='Geometry/TrackerCommonData/data/pixfwdCommon.xml'/>
