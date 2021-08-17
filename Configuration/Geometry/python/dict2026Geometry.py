@@ -134,8 +134,8 @@ commonDict = {
             'Geometry/CMSCommonData/data/cavern/2021/v1/cavern.xml',
             'Geometry/CMSCommonData/data/cavernFloor/2017/v1/cavernFloor.xml',
 			'Geometry/FbcmCommonData/data/PhaseII/FbcmVolume/cmsFbcm.xml',
-			'Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v1/fbcm.xml',
-			'Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v1/FbcmSpecs.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v2/fbcm.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v2/FbcmSpecs.xml',
 			'Geometry/FbcmSimData/data/PhaseII/FbcmSens.xml',
         ],
         5 : [

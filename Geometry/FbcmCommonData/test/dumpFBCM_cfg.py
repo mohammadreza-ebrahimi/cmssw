@@ -1,8 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("DUMP")
+
 process.load("Geometry.FbcmCommonData.fbcmGeometryXML_cfi")
-#process.load("Geometry.CMSCommonData.cmsExtendedGeometry2026D60XML_cfi")
+#process.load("Geometry.CMSCommonData.cmsExtendedGeometry2026D80XML_cfi")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.MessageLogger = cms.Service("MessageLogger",

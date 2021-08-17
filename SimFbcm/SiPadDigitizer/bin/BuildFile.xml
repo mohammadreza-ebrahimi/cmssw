@@ -1,0 +1,13 @@
+<environment>
+<use name="boost"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/ParameterSetReader"/>
+
+
+<use  name="SimFbcm/SiPadDigitizer"/>
+<use  name="DataFormats/FbcmDigi"/>
+
+
+<bin name="TestFbcmFrontEnd" file="*.cc">
+</bin>
+</environment>
