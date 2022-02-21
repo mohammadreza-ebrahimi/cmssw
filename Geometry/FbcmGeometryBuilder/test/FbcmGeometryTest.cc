@@ -67,9 +67,10 @@ void FbcmGeometryTest::analyze(const edm::Event&, const edm::EventSetup& iEventS
   
   
    for (int sideId=1; sideId<3; sideId++){
-	  for (int st=0 ; st<4 ; st++) {
-		  for (int die=0 ; die<40 ; die++) {
-			  
+	  for (int st=0 ; st<6 ; st++) { // BCM1F in Run-3 has 6 stations, while FBCM in Ph2 will have 4 stations (assuming!). 
+		  for (int die=0 ; die<2 ; die++) { // loop over all dies per station
+			 //for (int pad=0 ; pad<2 ; pad++) { 
+                 
 		  FbcmDetId detId1(sideId,st,die,0); 
 		  //std::cout << detId1;
 		   const FbcmSiliconDieGeom * DieGeomPtr=FbcmGeom2->IdToSiliconDie(detId1);
@@ -96,16 +97,19 @@ void FbcmGeometryTest::analyze(const edm::Event&, const edm::EventSetup& iEventS
 		  
 		  
 	  }
+      
+      //}
+      
 	  }
   
   }
   
   //FbcmGeom.product();
-  
-  	//for(const auto& SiPadGeomDet: allSiPadGeoms2) {
-			//std::cout << SiPadGeomDet->id();
+  std::cout << "check all sipads\n";
+  	for(const auto& SiPadGeomDet: allSiPadGeoms2) {
+			std::cout << SiPadGeomDet->id();
 			 ////Cool! it is OK!
-	//	}
+	}
   
  
 }

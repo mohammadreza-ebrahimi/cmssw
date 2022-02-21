@@ -2,12 +2,12 @@
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
  <ConstantsSection label="FbcmVolume" eval="true">
     <!-- dimensions of the FBCM volume -->
- 	<Constant name="FBCM_Z1" value="2770.*mm"></Constant>
-    <Constant name="FBCM_Z2" value="2900.*mm"/>
+ 	<Constant name="FBCM_Z1" value="1800.*mm"></Constant>
+    <Constant name="FBCM_Z2" value="1900.*mm"/>
     <Constant name="FBCM_Z"              value="([FBCM_Z2]+[FBCM_Z1])/2."><!-- z position of the center of FBCM volume wrt to CMS --></Constant>
     <Constant name="FBCM_Thickness"      value="([FBCM_Z2]-[FBCM_Z1])"></Constant>
-    <Constant name="FBCM_InnerRadius"    value="62.38*mm"><!--should be similar to pixel:Disc12--></Constant>
-    <Constant name="FBCM_OuterRadius"    value="255.101*mm"><!--should be similar to pixel:Disc12--></Constant>
+    <Constant name="FBCM_InnerRadius"    value="5*cm"><!-- [cms:TrackBeamR12] for BCM1F, or should be similar to pixel:Disc12 --></Constant>
+    <Constant name="FBCM_OuterRadius"    value="11.5*cm"><!-- [cms:TrackLumiR1] for BCM1F, should be similar to pixel:Disc12--></Constant>
     
      </ConstantsSection>
  
