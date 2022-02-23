@@ -30,8 +30,8 @@
  <Constant name="TrackBeamR12" value="3.15*cm"/>
  <Constant name="TrackBeamR2"  value="7.40*cm"/>
  <Constant name="TrackBeamR3" value="7.7633*cm"/>
- <Constant name="TrackLumiZ1"  value="1.722*m"/>
- <Constant name="TrackLumiZ2"  value="1.800*m"/>
+ <Constant name="TrackLumiZ1"  value="1.700*m"/> <!-- it was 1.722*m, but for PLT changed to 1.7*m -->
+ <Constant name="TrackLumiZ2"  value="1.900*m"/> <!-- it was 1.8*m, but for BCM1F and PLT changed to 1.9m -->
  <Constant name="TrackLumiR1"  value="7.70*cm"/>
  <Constant name="TrackLumiR1Min" value="3.170*cm"/>
  <Constant name="TrackLumiR2Min" value="3.3*cm"/>

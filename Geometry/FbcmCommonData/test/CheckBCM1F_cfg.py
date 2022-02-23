@@ -43,10 +43,6 @@ process.XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
                                         'Geometry/TrackerCommonData/data/PhaseI/v2/pixfwdDisks.xml',
                                         'Geometry/TrackerCommonData/data/PhaseI/v2/pixfwdSupportRingParameters.xml',
                                         'Geometry/TrackerCommonData/data/PhaseI/trackerpixfwd.xml',
-										#'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker613_MB_2019_04/pixel.xml',
-										#'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/trackerfwd.xml',
-										#'Geometry/TrackerRecoData/data/PhaseII/TiltedTracker613_MB_2019_04/trackerRecoMaterial.xml'
-
 									),
 									rootNodeName = cms.string('cms:OCMS')
 								)
