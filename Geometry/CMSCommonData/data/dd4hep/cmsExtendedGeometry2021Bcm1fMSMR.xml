@@ -28,6 +28,9 @@
     <Include ref='Geometry/FbcmCommonData/data/PhaseI-Run3/MultiSize_MultiRho/v1/fbcm.xml'/>
     <Include ref='Geometry/FbcmCommonData/data/PhaseI-Run3/MultiSize_MultiRho/v1/FbcmSpecs.xml'/>
     <Include ref='Geometry/FbcmSimData/data/PhaseI/FbcmSens.xml'/>
+    <Include ref='Geometry/ForwardCommonData/data/pltbcm/2021/v2/pltbcm.xml'/>
+    <Include ref='Geometry/ForwardCommonData/data/plt/2021/v1/plt.xml'/>
+    <Include ref='Geometry/ForwardSimData/data/pltsens.xml'/>
     <Include ref='Geometry/TrackerCommonData/data/PhaseI/trackerParameters.xml'/>
     <Include ref='Geometry/TrackerCommonData/data/pixfwdMaterials/2021/v2/pixfwdMaterials.xml'/>
     <Include ref='Geometry/TrackerCommonData/data/pixfwdCommon.xml'/>

@@ -58,6 +58,9 @@ commonDict = {
 			'Geometry/FbcmCommonData/data/PhaseI-Run3/MultiSize_MultiRho/v1/fbcm.xml',
 			'Geometry/FbcmCommonData/data/PhaseI-Run3/MultiSize_MultiRho/v1/FbcmSpecs.xml',
 			'Geometry/FbcmSimData/data/PhaseI/FbcmSens.xml',
+            'Geometry/ForwardCommonData/data/pltbcm/2021/v2/pltbcm.xml',
+            'Geometry/ForwardCommonData/data/plt/2021/v1/plt.xml',
+            'Geometry/ForwardSimData/data/pltsens.xml',
         ],
         5 : [
             'Geometry/CMSCommonData/data/FieldParameters.xml',
@@ -97,6 +100,9 @@ commonDict = {
 			'Geometry/FbcmCommonData/data/PhaseI-Run3/bcm1f-Run3/v1/fbcm.xml',
 			'Geometry/FbcmCommonData/data/PhaseI-Run3/bcm1f-Run3/v1/FbcmSpecs.xml',
 			'Geometry/FbcmSimData/data/PhaseI/FbcmSens.xml',
+            'Geometry/ForwardCommonData/data/pltbcm/2021/v2/pltbcm.xml',
+            'Geometry/ForwardCommonData/data/plt/2021/v1/plt.xml',
+            'Geometry/ForwardSimData/data/pltsens.xml',
         ],
         5 : [
             'Geometry/CMSCommonData/data/FieldParameters.xml',
