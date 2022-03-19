@@ -23,6 +23,8 @@
 //#include "SimFbcm/SiPadDigitizer/interface/HitAnalysisInfo.h"
 #include "DataFormats/FbcmDigi/interface/HitAnalysisInfo.h"
 
+#include "SimFbcm/SiPadDigitizer/interface/VmeLogicCircuit.h"
+
 #include <fstream>
 
 namespace FbcmFE {
@@ -35,6 +37,7 @@ namespace FbcmFE {
         ~FbcmFrontEndChip();
         void printInfo();
         void printInfo_with_AlignedTime();
+        void printInfo_with_AlignedTime_BCM1FVME();
         void PrintInputCurrent_uA();
         void Print_TIAOutput_Voltage_mV();
         void Print_ShaperOutput_Voltage_mV();
@@ -46,6 +49,7 @@ namespace FbcmFE {
     private:
 
 		void SetSubmoduleParameters();
+        void setBcm1fVME_Parameters();
         void Set_TIA_InputSignal(SignalType & PulseShape);
 
         FftPreparation & fftPrep;
@@ -63,6 +67,11 @@ namespace FbcmFE {
 		LogicSignalType CFD_ZeroCCompOutSig_;
 		LogicSignalType CFD_ArmingCompOutSig_;
 		LogicSignalType CFD_LogicOutput_;
+        //----- VME BCM1F ------------
+        LogicSignalType vmeCompOutSig_;
+        Comparator vmeComp;
+        VmeLogicCircuit VMELogicCirc;
+        //----- end VME BCM1F ------------
 		Filter TIA_Hf_;
 		Filter Shaper_Hf_;
 		Filter Delay_Hf_;

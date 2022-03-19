@@ -20,14 +20,14 @@
     <Constant name="NumOfRingsPerStation"           value="5"></Constant>
     <Constant name="TotalNumOfSiDiesPerRing"   value="[NumOfSiDiesPerStationPerRing]*[NumOfStations]"></Constant>
     <Constant name="IncrementRotAngle"   value="(360*deg)/[TotalNumOfSiDiesPerRing]"></Constant>
-    <Constant name="SiPadLen1"   value="1.7*mm"></Constant>
-    <Constant name="SiPadLen2"   value="1.7*mm"></Constant>
-    <Constant name="SiPadLen3"   value="1.7*mm"></Constant>
-    <Constant name="SiPadLen4"   value="1.7*mm"></Constant>
-    <Constant name="SiPadLen5"   value="1.7*mm"></Constant>
-    <Constant name="SiPadLen6"   value="1.7*mm"></Constant>
-    <Constant name="SiPadLen7"   value="1.7*mm"></Constant>
-    <Constant name="SiPadLen8"   value="1.7*mm"></Constant>
+    <Constant name="SiPadLen1"   value="1.6125*mm"></Constant>
+    <Constant name="SiPadLen2"   value="1.6303*mm"></Constant>
+    <Constant name="SiPadLen3"   value="1.6567*mm"></Constant>
+    <Constant name="SiPadLen4"   value="1.6740*mm"></Constant>
+    <Constant name="SiPadLen5"   value="1.6997*mm"></Constant>
+    <Constant name="SiPadLen6"   value="1.7250*mm"></Constant>
+    <Constant name="SiPadLen7"   value="1.7417*mm"></Constant>
+    <Constant name="SiPadLen8"   value="1.7664*mm"></Constant>
     
     <Constant name="SiCellLen1"   value="[SiPadLen1]+[SensorPad_Gap]"></Constant>
     <Constant name="SiCellLen2"   value="[SiPadLen2]+[SensorPad_Gap]"></Constant>
@@ -65,36 +65,36 @@
     <Constant name="SiDie4_NumOfRowsR0"   value="5"></Constant>
     <Constant name="SiDie5_NumOfRowsR0"   value="5"></Constant>
     <Constant name="SiDie6_NumOfRowsR0"   value="5"></Constant>
-    <Constant name="SiDie7_NumOfRowsR0"   value="5"></Constant>
+    <Constant name="SiDie7_NumOfRowsR0"   value="4"></Constant>
     <Constant name="SiDie8_NumOfRowsR0"   value="5"></Constant>
     
     <!--Ring1 -->
-    <Constant name="SiDie1_NumOfRowsR1"   value="5"></Constant>
-    <Constant name="SiDie2_NumOfRowsR1"   value="5"></Constant>
-    <Constant name="SiDie3_NumOfRowsR1"   value="5"></Constant>
-    <Constant name="SiDie4_NumOfRowsR1"   value="5"></Constant>
+    <Constant name="SiDie1_NumOfRowsR1"   value="6"></Constant>
+    <Constant name="SiDie2_NumOfRowsR1"   value="6"></Constant>
+    <Constant name="SiDie3_NumOfRowsR1"   value="6"></Constant>
+    <Constant name="SiDie4_NumOfRowsR1"   value="6"></Constant>
     <Constant name="SiDie5_NumOfRowsR1"   value="5"></Constant>
-    <Constant name="SiDie6_NumOfRowsR1"   value="5"></Constant>
+    <Constant name="SiDie6_NumOfRowsR1"   value="6"></Constant>
     <Constant name="SiDie7_NumOfRowsR1"   value="5"></Constant>
     <Constant name="SiDie8_NumOfRowsR1"   value="5"></Constant>
     
     
     
     <!--Ring2 -->
-    <Constant name="SiDie1_NumOfRowsR2"   value="6"></Constant>
-    <Constant name="SiDie2_NumOfRowsR2"   value="6"></Constant>
+    <Constant name="SiDie1_NumOfRowsR2"   value="7"></Constant>
+    <Constant name="SiDie2_NumOfRowsR2"   value="7"></Constant>
     <Constant name="SiDie3_NumOfRowsR2"   value="6"></Constant>
-    <Constant name="SiDie4_NumOfRowsR2"   value="6"></Constant>
+    <Constant name="SiDie4_NumOfRowsR2"   value="7"></Constant>
     <Constant name="SiDie5_NumOfRowsR2"   value="6"></Constant>
-    <Constant name="SiDie6_NumOfRowsR2"   value="6"></Constant>
+    <Constant name="SiDie6_NumOfRowsR2"   value="7"></Constant>
     <Constant name="SiDie7_NumOfRowsR2"   value="6"></Constant>
     <Constant name="SiDie8_NumOfRowsR2"   value="6"></Constant>
     
     
     <!--Ring3 -->
-    <Constant name="SiDie1_NumOfRowsR3"   value="7"></Constant>
+    <Constant name="SiDie1_NumOfRowsR3"   value="8"></Constant>
     <Constant name="SiDie2_NumOfRowsR3"   value="7"></Constant>
-    <Constant name="SiDie3_NumOfRowsR3"   value="7"></Constant>
+    <Constant name="SiDie3_NumOfRowsR3"   value="8"></Constant>
     <Constant name="SiDie4_NumOfRowsR3"   value="7"></Constant>
     <Constant name="SiDie5_NumOfRowsR3"   value="7"></Constant>
     <Constant name="SiDie6_NumOfRowsR3"   value="7"></Constant>
@@ -104,7 +104,7 @@
     
     <!--Ring4 -->
     <Constant name="SiDie1_NumOfRowsR4"   value="8"></Constant>
-    <Constant name="SiDie2_NumOfRowsR4"   value="8"></Constant>
+    <Constant name="SiDie2_NumOfRowsR4"   value="9"></Constant>
     <Constant name="SiDie3_NumOfRowsR4"   value="8"></Constant>
     <Constant name="SiDie4_NumOfRowsR4"   value="8"></Constant>
     <Constant name="SiDie5_NumOfRowsR4"   value="8"></Constant>

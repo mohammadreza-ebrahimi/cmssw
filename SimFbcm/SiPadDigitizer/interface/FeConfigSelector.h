@@ -19,7 +19,9 @@ class FeConfigSelector {
 		FeConfigSelector(const std::vector< edm::ParameterSet > & SiPadFrontEndParamVect_);
 		~FeConfigSelector();
 		std::pair<float, const edm::ParameterSet * > SelectFrontEndConfig(float SensorsSize);
-		const edm::ParameterSet * GetSelectedFrontEndConfic() {return ActiveFrontEndParamPtr; }
+        std::pair<float, const edm::ParameterSet * > SelectFrontEndConfig(float SensorsSize, int SensorGroupIndex);
+		const edm::ParameterSet * GetSelectedFrontEndConfig() {return ActiveFrontEndParamPtr; }
+        int getSelectedActvSenGrpIndx() {return ActiveSensorGroupIndex_;}
 
 	private:
 		//const std::vector< edm::ParameterSet > & SiPadFrontEndParamVect; // even though the Reference would also work in a standalone compilation,
@@ -28,6 +30,7 @@ class FeConfigSelector {
 		const std::vector< edm::ParameterSet > SiPadFrontEndParamVect; // keeping an exact copy the parameter Set, not a Reference.
 		std::vector < std::pair< int ,  std::vector<double>   > > table;
 		const edm::ParameterSet * ActiveFrontEndParamPtr;
+        int ActiveSensorGroupIndex_;
 
 	};
 

@@ -42,23 +42,26 @@ public:
         IsToTValid_(true),
         //ToA_Status_(ToAStatus::UnKnown),
 		ToA_Status_(ToAStatus_UnKnown),
-        SubBxBinNo_(0)   {};
+        SubBxBinNo_(0),
+        PeakAmplitude_(0.0)  {};
 
     ~ToaTotPair() {};
 
-    void SetPairInfo(float ToA_,float ToT_, bool IsToTValid, ToAStatus ToA_Status, int16_t SubBxBinNo) {
+    void SetPairInfo(float ToA_,float ToT_, bool IsToTValid, ToAStatus ToA_Status, int16_t SubBxBinNo, float PeakAmpl) {
         TimeOfArrival=ToA_;
         TimeOverThreshold=ToT_;
         IsToTValid_=IsToTValid;
         ToA_Status_=(char)ToA_Status;
-        SubBxBinNo_=SubBxBinNo; }
+        SubBxBinNo_=SubBxBinNo; 
+        PeakAmplitude_=PeakAmpl;       }
 
     float ToA() const {return TimeOfArrival;}
     float ToT() const {return TimeOverThreshold;}
     ToAStatus ToAToAStatus() const {return (ToAStatus)ToA_Status_;}
 	int ToAToAStatusInt() const {return (int)ToA_Status_;}
     int SubBxBinNumber() const {return SubBxBinNo_;}
-    bool IsToTValid() {return IsToTValid_;}
+    bool IsToTValid() const {return IsToTValid_;}
+    float PeakAmplitude() const {return PeakAmplitude_;}
 	
 	inline bool operator<(const ToaTotPair& other) const { return ToA() < other.ToA(); }
 	
@@ -69,6 +72,7 @@ private:
     //ToAStatus ToA_Status_;
 	char ToA_Status_;
     int16_t SubBxBinNo_;
+    float PeakAmplitude_;
 };
 
 std::ostream& operator<<(std::ostream& o, ToaTotPair& TTpair);

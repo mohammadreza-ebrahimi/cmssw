@@ -20,7 +20,16 @@ SiPadDigitizer = cms.PSet(
 									SiPadFrontEndBlock5,
 									SiPadFrontEndBlock6,
 									SiPadFrontEndBlock7,
-									SiPadFrontEndBlock8 ),
+									SiPadFrontEndBlock8 ), 
+    FE_SelectionType = cms.int32(1), # 0: automatic selection by sensor size; similar to TDR
+                                     # 1: automatic selection by SiDie group Index (copyNo); 
+                                     #    good for similar sensor sizes, but various FE parameters (blocks). 
+                                     # 2: only an unique SiPadFrontEnd configuration for all the sensors,
+                                     #    regardless of the sizes or different SiDes. with case 2, only
+                                     #    the first element of the SiPadFrontEndParam PSet is used. 
+                                     #    case 2 also considers size-dependent parameters such as detector capacitance.
+                                     
+                                     
 	TofCharge_Test = cms.PSet(TofCharge_Test),
 	SiHitPulseShapeParam = cms.PSet(SiHitPulseShapeParam)
 	

@@ -188,6 +188,7 @@ void SiPadDigitizer::accumulateSiPadHits(edm::Handle<std::vector<PSimHit> > hSim
 					  DigiResult.StationIndex(),
 					  DigiResult.SiliconDieIndex(),
 					  DigiResult.SiPadIndex(),
+                      DigiResult.SiGroupIndex(),
 					  DigiResult.Radius(),
 					  DigiResult.Phi_Degrees(),
 					  DigiResult.Area(),

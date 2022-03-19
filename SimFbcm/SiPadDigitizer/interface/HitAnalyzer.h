@@ -18,7 +18,7 @@ namespace FbcmFE {
 	class HitAnalyzer {
 
     public:
-		HitAnalyzer(FftPreparation & FFtPrep,LogicSignalType & CFD_LogicalSignal);
+		HitAnalyzer(FftPreparation & FFtPrep,LogicSignalType & CFD_LogicalSignal, const SignalType & Signal2PeakAmplSampler );
 		~HitAnalyzer();
 		void RunHitAnalyzer(int BXC_SlotNo);
 		SignalType & GetAlignedTimeVect(){return timeVectAligned_;}
@@ -34,6 +34,7 @@ namespace FbcmFE {
 
         SignalType timeVectAligned_;
 		LogicSignalType & CFD_LogicalSignal_;
+        const SignalType & Signal2PeakAmplSampler_;
 		std::vector<ToaTotPair> TotToaVect;
 		int BXC_SlotNo_;
 		double BX_Duration_;
@@ -44,7 +45,9 @@ namespace FbcmFE {
         double ToAUpperCut_ ;  // for BIB study, more than one BX should be investigated
         double ToALowerCut_;   // for BIB study, more than one BX should be investigated
         double BinLen_ ;
+        int nSubBins_ ; 
         double BinShift_;
+        float pAmpl;
 
 	};
 

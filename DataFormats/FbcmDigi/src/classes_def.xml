@@ -1,8 +1,8 @@
 <lcgdict>
   
  
-  <class name="SiPadDigiData" ClassVersion="10">
-  <version ClassVersion="10" checksum="268583949"/>
+  <class name="SiPadDigiData" ClassVersion="11">
+  <version ClassVersion="11" checksum="816118280"/>
   </class>
 
  <class name="edm::DetSet<SiPadDigiData>" splitLevel="0" />
@@ -85,8 +85,8 @@
 
 
 
-   <class name="ToaTotPair" ClassVersion="10">
-    <version ClassVersion="10" checksum="2402690252"/>
+   <class name="ToaTotPair" ClassVersion="11">
+    <version ClassVersion="11" checksum="573245825"/>
    </class>
    <class name="edm::Wrapper< ToaTotPair >"  splitLevel="0" />
    

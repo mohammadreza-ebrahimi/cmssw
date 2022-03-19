@@ -10,7 +10,8 @@
 
 namespace FbcmFE {
     FeConfigSelector::FeConfigSelector(const std::vector< edm::ParameterSet > & SiPadFrontEndParamVect_):
-	SiPadFrontEndParamVect(SiPadFrontEndParamVect_)
+	SiPadFrontEndParamVect(SiPadFrontEndParamVect_),
+    ActiveSensorGroupIndex_(0)
 	{ 
 		std::vector < double > Range;
 		for (unsigned int j=0 ; j < SiPadFrontEndParamVect.size() ; j++ ){
@@ -29,10 +30,19 @@ namespace FbcmFE {
 				break;
 			}
 		}
-		
-		ActiveFrontEndParamPtr = SiPadFrontEndParamVect.data() + SelectedIndex;
+		ActiveSensorGroupIndex_=SelectedIndex;
+        
+		ActiveFrontEndParamPtr = SiPadFrontEndParamVect.data() + SelectedIndex; 
 		//ActiveFrontEndParamPtr = & SiPadFrontEndParamVect[SelectedIndex];
+		//std::cout << "from SenSize: "	<< SelectedIndex <<", area"<< SensorsSize<<"\n";
+		return std::make_pair(SensorsSize, ActiveFrontEndParamPtr);
+	}
+    
+    std::pair<float, const edm::ParameterSet * > FeConfigSelector::SelectFrontEndConfig(float SensorsSize, int SensorGroupIndex){
 		
+		ActiveFrontEndParamPtr = SiPadFrontEndParamVect.data() + SensorGroupIndex; 
+		//std::cout << "from indexSen: "	<< SensorGroupIndex <<", area"<< SensorsSize<<"\n";
+        ActiveSensorGroupIndex_=SensorGroupIndex;
 		return std::make_pair(SensorsSize, ActiveFrontEndParamPtr);
 	}
 
