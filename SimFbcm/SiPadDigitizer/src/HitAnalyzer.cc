@@ -9,9 +9,10 @@
 
 namespace FbcmFE {
 
-    HitAnalyzer::HitAnalyzer(FftPreparation & FFtPrep,LogicSignalType & CFD_LogicalSignal):
+    HitAnalyzer::HitAnalyzer(FftPreparation & FFtPrep,LogicSignalType & CFD_LogicalSignal, const SignalType & Signal2PeakAmplSampler):
     FFtPrep_(FFtPrep),
     CFD_LogicalSignal_(CFD_LogicalSignal),
+    Signal2PeakAmplSampler_(Signal2PeakAmplSampler),
     BX_Duration_(25.0),
     FS_(FFtPrep_.SamplingRepetition()),
     BxHitStatus(HitStatus::Zero),
@@ -24,7 +25,7 @@ namespace FbcmFE {
     void HitAnalyzer::RunHitAnalyzer(int BXC_SlotNo){
 
         TotToaVect.clear();
-		const float Eps=0.0001;
+		const float Eps=0.000;
 		
         float HalfBxLen=BX_Duration_/2.0;
         int Len=timeVectAligned_.size();
@@ -48,7 +49,7 @@ namespace FbcmFE {
         int16_t SubBxBinNo;
         bool LastState=CFD_LogicalSignal_ [lowerTimeIndexCut-1];
         for (i=lowerTimeIndexCut; ((i <= UpperTimeIndexCut) || HitDetected==true ) && (i < Len) ; i++)
-        {
+        { 
 
             if ( i==lowerTimeIndexCut && CFD_LogicalSignal_[lowerTimeIndexCut]) {
                 for (BckwardCNT=lowerTimeIndexCut-1; (CFD_LogicalSignal_ [BckwardCNT]) && BckwardCNT >= 0  ; BckwardCNT--) ;
@@ -73,8 +74,14 @@ namespace FbcmFE {
                     SubBxBinNo= (int16_t)(round((ToA-binshift)/BinLen_));
 
                     ToAState=GetToAStatus(ToA,ToT,HalfBxLen);
+                    
+                    pAmpl = Signal2PeakAmplSampler_[start_];
+                    for (unsigned int k=start_ ; k < end_ ; k++ )
+                        if (Signal2PeakAmplSampler_[k] > pAmpl) 
+                            pAmpl=Signal2PeakAmplSampler_[k]; 
+                        
 
-                    TotToa.SetPairInfo(ToA,ToT, true, ToAState ,SubBxBinNo );
+                    TotToa.SetPairInfo(ToA,ToT, true, ToAState ,SubBxBinNo, pAmpl );
                     TotToaVect.emplace_back(TotToa);
 
 //                    std::cout << "A hit detected, ToA: " << TotToa.ToA() << ", "
@@ -93,13 +100,18 @@ namespace FbcmFE {
                     HitDetected = false;
                     ToA=timeVectAligned_[start_]-(BXC_SlotNo_*BX_Duration_);
                     SubBxBinNo= (int16_t)(round((ToA-binshift)/BinLen_));
-                    //end_=i-1;
-                    //ToT=timeVectAligned_[end_]-timeVectAligned_[start_];
-                    ToT=1000.0;
+                    end_=i-1;
+                    ToT=timeVectAligned_[end_]-timeVectAligned_[start_];
+                    //ToT=1000.0;
 
                     ToAState=GetToAStatus(ToA,ToT,HalfBxLen);
 
-                    TotToa.SetPairInfo(ToA,ToT,false, ToAState , SubBxBinNo );
+                    pAmpl = Signal2PeakAmplSampler_[start_];
+                    for (unsigned int k=start_ ; k < end_ ; k++ )
+                        if (Signal2PeakAmplSampler_[k] > pAmpl) 
+                            pAmpl=Signal2PeakAmplSampler_[k]; 
+
+                    TotToa.SetPairInfo(ToA,ToT,false, ToAState , SubBxBinNo, pAmpl );
                     TotToaVect.emplace_back(TotToa);
         }
             NumOfRecognizedHits=CheckHitInBx();
@@ -162,11 +174,15 @@ namespace FbcmFE {
 		AlignerDelay_ = FEParamPtr->getParameter< double >("lpGBT_AlignerDelay");
 		ToAUpperCut_  = FEParamPtr->getParameter< double >("ToAUpperCut");
         ToALowerCut_  = FEParamPtr->getParameter< double >("ToALowerCut");
-        BinLen_  = FEParamPtr->getParameter< double >("BinLength");
+        
+        nSubBins_  = FEParamPtr->getParameter< int >("NumOfSubBXbins");
 		BinShift_ = FEParamPtr->getParameter< double >("BinOffset");
 		
 		timeVectAligned_=FFtPrep_.TimeVectZeroCenter()-AlignerDelay_;
 		
+        //BinLen_  = FEParamPtr->getParameter< double >("BinLength");
+        BinLen_ = BX_Duration_ / nSubBins_;
+        
 		// std::cout << "BX_Duration_: " << BX_Duration_ << "\n"
 					// << "AlignerDelay_: " << AlignerDelay_ << "\n"
 					// << "ToAUpperCut_: " << ToAUpperCut_ << "\n"

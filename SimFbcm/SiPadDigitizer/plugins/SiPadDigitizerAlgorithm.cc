@@ -18,6 +18,7 @@ SiPadDigitizerAlgorithm::SiPadDigitizerAlgorithm(const edm::ParameterSet& conf) 
 	FFT_SimParam(conf.getParameter<edm::ParameterSet>("FFT_SimParam") ),
 	SiHitPulseShapeParam(conf.getParameter<edm::ParameterSet>("SiHitPulseShapeParam")),
 	SiPadFrontEndParamVect(conf.getParameter< std::vector< edm::ParameterSet > >("SiPadFrontEndParam")),
+    FE_BlockSelectionType_(conf.getParameter< int >("FE_SelectionType") ),
 	FftPrep(FFT_SimParam),
 	HitPulse( SiHitPulseShapeParam.getParameter< std::vector<double> >("HitPulseParam") ),
     FrontEnd(FftPrep), // the FrontEnd parameters will be set just before running each sensor size
@@ -59,7 +60,8 @@ SiPadDigitizerAlgorithm::SiPadDigitizerAlgorithm(const edm::ParameterSet& conf) 
 void SiPadDigitizerAlgorithm::init(const edm::EventSetup& es) 
    { 
    // if the FbcmGeometry is needed, then it can be retrieved here.
-   //es.get<FbcmGeometryRecord>().get(geom_); 
+   es.get<FbcmGeometryRecord>().get(geom_); 
+   
    }
 
 
@@ -585,7 +587,17 @@ void SiPadDigitizerAlgorithm::loadAccumulator(unsigned int detId, const std::map
 void SiPadDigitizerAlgorithm::GetDigiResults(const FbcmSiPadGeom* SiPadGeom,  std::map<int, SiPadDigiData>& SiPadDigilMap) {
 
 uint32_t detID = SiPadGeom->geographicalId().rawId();
+
 FbcmDetId SiPadDetId(detID);
+const FbcmStationGeom* stationGeom = geom_->IdToStation(SiPadDetId);
+//const FbcmSiPadGeom* temSiPadGeom = geom_->IdToSiPad(SiPadDetId);
+int nbrOfDiesPerRing = stationGeom->NumOfDiesPerRing();
+int SensorGroupIndex = SiPadDetId.SiliconDie() % nbrOfDiesPerRing;
+//std::cout << "nbrOfDiesPerRing is " << nbrOfDiesPerRing << " and DieIndex:" << SensorGroupIndex <<", FEBlock"<< FE_BlockSelectionType_ <<"\n" ;     
+
+//if (temSiPadGeom!=SiPadGeom)
+    //std::cout << "Fetal error!\n"; // thankfully not found
+
   auto it = _signal.find(detID);
   if (it == _signal.end())
     return;
@@ -618,8 +630,35 @@ FbcmDetId SiPadDetId(detID);
 	float PhiDegrees = SiPadGeom->surface().position().phi().degrees();
 		
 	HitPulse.GetPulseSeriesShape(FftPrep, Tof_Q_pairVect); // vector for charge amplitude
-	Area_FeParamPtr = FeParamSelector.SelectFrontEndConfig(SiPadArea);
-	FrontEnd.RunFECircuit(Area_FeParamPtr);
+    
+    
+    switch (FE_BlockSelectionType_){
+        case 0: //0: automatic selection by  sensor size; similar to TDR
+            Area_FeParamPtr = FeParamSelector.SelectFrontEndConfig(SiPadArea);
+            SensorGroupIndex = FeParamSelector.getSelectedActvSenGrpIndx(); // should be called after selection
+        break;
+        case 1: // 1: selection by SiDie group Index; 
+                // good for similar sensor sizes, but various FE parameters. 
+            
+            Area_FeParamPtr = FeParamSelector.SelectFrontEndConfig(SiPadArea, SensorGroupIndex);
+        break;
+        
+        case 2: // 2: selection by SiDie group Index; 
+                // good for similar sensor sizes, but various FE parameters. 
+            SensorGroupIndex=0;
+            Area_FeParamPtr = FeParamSelector.SelectFrontEndConfig(SiPadArea, SensorGroupIndex );
+        break;
+        
+        default :
+            throw cms::Exception("Wrong FE_SelectionType") << " FE_SelectionType in SiPadDigitizer_cfi should be 0, 1, or 2\n";
+            break;
+        
+    }
+	
+	
+    
+    FrontEnd.RunFECircuit(Area_FeParamPtr);
+    
 	
 	HitAnalysisVect.clear();
 	for (int BxSlotNo = FirstBxSlotNo ; BxSlotNo <= LastBxSlotNo ; BxSlotNo++) {
@@ -636,6 +675,7 @@ FbcmDetId SiPadDetId(detID);
 								SiPadDetId.Station(),
 								SiPadDetId.SiliconDie(),
 								SiPadDetId.SiPad(),
+                                SensorGroupIndex,
 								RRadius,
 								PhiDegrees,
 								SiPadArea,

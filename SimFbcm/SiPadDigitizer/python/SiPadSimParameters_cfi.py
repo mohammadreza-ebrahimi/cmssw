@@ -2,12 +2,12 @@ import FWCore.ParameterSet.Config as cms
 
 SiPadSimBlock = cms.PSet(
 	
-	ReadoutNoiseInElec = cms.double(200.0), #readout noise, including all readout chain 
+	ReadoutNoiseInElec = cms.double(500.0), #readout noise, including all readout chain 
 	GaussianTailNoise = cms.double(0.0),    # for GaussianTailNoiseGenerator, not impelemented YET
 	HitSelectionMode = cms.int32(1), # 1 or 0 # 1 means select all hits, 0 means filter hits according to the TofUpperCut and TofLowerCut
     TofUpperCut = cms.double(60), # the Tof for the positin of FBCM is ~9.4ns for the BxSlotNo=0
     TofLowerCut = cms.double(-60), 
-    FirstBxSlotNo = cms.int32(0), # by default BxSlotNo Zero is the first one for each Event
+    FirstBxSlotNo = cms.int32(-2), # by default BxSlotNo Zero is the first one for each Event
 	LastBxSlotNo = cms.int32(2), # this means the last BxSlotNo to study hitAnalsis and Store HitAnalysisInfo in the vector
 	
 	PseudoRadDamage = cms.untracked.double(0.0),
@@ -20,7 +20,9 @@ SiPadSimBlock = cms.PSet(
     SigmaZero = cms.double(0.00037),  		# 3.7um spread for 300um-thick sensor, renormalized in digitizerAlgo
     SigmaCoeff = cms.double(1.80),  		# to be confirmed with simulations in CMSSW_6.X
     ClusterWidth = cms.double(3),		# this is used as number of sigmas for charge collection (3=+-3sigmas)
-    TanLorentzAnglePerTesla_Fbcm = cms.double(0.07), # this is equal to the Tracker-endcap
+    TanLorentzAnglePerTesla_Fbcm = cms.double(0.106), 
+    # TanLorentzAnglePerTesla: 0.07 is for the Tracker-endcap (Pixel and Strip in PS and 2S) 
+    # TanLorentzAnglePerTesla: 0.106 is for the inner Tracker Pixel 
 	    
 ) 
 

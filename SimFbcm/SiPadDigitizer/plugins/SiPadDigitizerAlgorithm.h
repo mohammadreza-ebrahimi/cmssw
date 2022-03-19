@@ -30,6 +30,7 @@
 #include "DataFormats/SiPixelDigi/interface/PixelDigi.h"
 #include "DataFormats/FbcmDigi/interface/SiPadDigiData.h"
 #include "DataFormats/FbcmDetId/interface/FbcmDetId.h"
+#include "Geometry/Records/interface/FbcmGeometryRecord.h"
 
 #include "SimTracker/Common/interface/SiG4UniversalFluctuation.h"
 
@@ -80,7 +81,7 @@ public:
   void loadAccumulator(unsigned int detId, const std::map<int, float>& accumulator);
 
 protected:
-  //edm::ESHandle<FbcmGeometry> geom_;
+  edm::ESHandle<FbcmGeometry> geom_;
 
   // Accessing Lorentz angle from DB:
   //edm::ESHandle<SiPixelLorentzAngle> SiPixelLorentzAngle_;
@@ -98,7 +99,8 @@ protected:
 	const edm::ParameterSet& FFT_SimParam ; // = SiPadDigitizerParam.getParameter<edm::ParameterSet>("FFT_SimParam");
 	const edm::ParameterSet& SiHitPulseShapeParam ; // = SiPadDigitizerParam.getParameter<edm::ParameterSet>("SiHitPulseShapeParam");
 	const std::vector< edm::ParameterSet > & SiPadFrontEndParamVect; //  = SiPadDigitizerParam.getParameter< std::vector< edm::ParameterSet > >("SiPadFrontEndParam");
-
+    const int FE_BlockSelectionType_; 
+    
 	FftPreparation FftPrep; //(FFT_SimParam); 
 	SiHitPulseShape HitPulse; // ( SiHitPulseShapeParam.getParameter< std::vector<double> >("HitPulseParam") );
 	FbcmFrontEndChip FrontEnd; //(FftPrep); // the FrontEnd parameters will be set just before running for each sensor size

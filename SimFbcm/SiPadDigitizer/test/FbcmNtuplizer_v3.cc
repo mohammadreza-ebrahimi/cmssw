@@ -24,6 +24,7 @@
 
 #define MAX_SIMHIT_SIZE 100
 #define MAX_DIGHIT_SIZE 100
+#define MAX_BXSlot_SIZE 100
 #define AREA_GROUP_LEN 8
 
 #define TEST_IND 7
@@ -44,7 +45,7 @@ private:
   virtual void endJob() override;
 
   virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
-  //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
+  virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
   //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
   //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 
@@ -52,17 +53,23 @@ private:
   // ----------member data ---------------------------
   edm::EDGetTokenT< edm::DetSetVector<SiPadDigiData> > TokenTag_;
   edm::ESHandle<FbcmGeometry> theFbcmGeom;
+  //const std::vector<edm::ParameterSet> sectors_;
   
-  int nbrOfDiesPerRing;
-
+  
+  
   TH1* hNEvents;
+  TH1* hNSensorGroups;
   
   TTree* theTree;
   TTree* FixedValuesTree;
     
   float SensorArea;
   float SensorRho;
-  int SensorGroupIndex;
+  
+  int SensorGroupIndex; // collected for each hit. 
+  int numberOfSensorGroups; // maximum number of SiGroupIndex used in the digi step. 
+  int nbrOfDiesPerRing; 
+
   
   //int NumOfSensors;
   
@@ -78,11 +85,21 @@ private:
   float SimTofs[MAX_SIMHIT_SIZE];
   float SimTof_perBx[MAX_SIMHIT_SIZE];
 
-  int DigiHitStatus[3];
-  int nDigiHits[3]; 
+  int DigiHitStatus[MAX_BXSlot_SIZE];
+  int nDigiHits[MAX_BXSlot_SIZE]; 
   
   float DigiToAs[MAX_DIGHIT_SIZE] ;
   float DigiToTs[MAX_DIGHIT_SIZE];
+  float PeakAmpl[MAX_DIGHIT_SIZE];
+  
+  
+  int nTotalRhuDigi;
+  int nInterstedRhuBins; 
+  int DigiRHUs[MAX_DIGHIT_SIZE] ;
+  
+  std::vector < int > tmpVect;
+  std::vector < int > rhuInterestedHitBins_;
+  //std::vector < int > rhuFullBxBinRange_;
   
 };
 
@@ -98,19 +115,25 @@ private:
 // constructors and destructor
 //
 FbcmNtuplizer_v3::FbcmNtuplizer_v3(const edm::ParameterSet& iConfig) :
-  TokenTag_(consumes< edm::DetSetVector<SiPadDigiData> >(iConfig.getParameter<edm::InputTag>("FbcmDigiTag")))
+  TokenTag_(consumes< edm::DetSetVector<SiPadDigiData> >(iConfig.getParameter<edm::InputTag>("FbcmDigiTag"))),
+  numberOfSensorGroups(0)
 {
+  numberOfSensorGroups=0;
   edm::Service<TFileService> fs;
   theTree = fs->make<TTree>( iConfig.getParameter< string >("TreeName").c_str() , "all hits" );
   FixedValuesTree = fs->make<TTree>( "GeometryInfo" , "FixedValues" );
   hNEvents = fs->make<TH1I>("hNEvents" , "" , 1 , 0 , 1 );
+  hNSensorGroups = fs->make<TH1I>("hNSensorGroups", "", 1, 0, 1);
 
   Int_t bsize = 32000; //default
 
-  theTree->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize );
-  theTree->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  );
+  //theTree->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize );
+  //theTree->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  );
+  
+  theTree->Branch("SensorRho" , &SensorRho , "SensorRho/F", bsize );
+  theTree->Branch("SensorArea" , &SensorArea , "SensorArea/F" , bsize  );
   theTree->Branch("nSimParticles" , &nSimParticles);
-  theTree->Branch("SensorGroupIndex" , &SensorGroupIndex);
+  theTree->Branch("SensorGroupIndex" , &SensorGroupIndex); 
   theTree->Branch("SimPdgId" , SimPdgIds , "SimPdgId[nSimParticles]/I" , bsize );
   theTree->Branch("SimPt" , SimPts , "SimPt[nSimParticles]/F" , bsize );
   theTree->Branch("SimCharge" , SimCharges , "SimCharge[nSimParticles]/F", bsize );
@@ -123,7 +146,22 @@ FbcmNtuplizer_v3::FbcmNtuplizer_v3(const edm::ParameterSet& iConfig) :
   theTree->Branch("nValidDigiToTs" , &nValidDigiToTs);
   theTree->Branch("DigiToA" , DigiToAs , "DigiToAs[nValidDigiToAs]/F" , bsize );
   theTree->Branch("DigiToT" , DigiToTs , "DigiToTs[nValidDigiToTs]/F", bsize );
-	
+  theTree->Branch("PeakAmplitude" , PeakAmpl , "PeakAmpl[nValidDigiToAs]/F" , bsize );
+  
+  theTree->Branch("nTotalRhuDigi" , &nTotalRhuDigi);
+  theTree->Branch("nInterstedRhuBins" , &nInterstedRhuBins);
+  theTree->Branch("DigiRHU" , DigiRHUs , "DigiRHUs[nTotalRhuDigi]/I", bsize );
+  
+  tmpVect = iConfig.getParameter< std::vector<int> >("RHU_InterestedHitBins");
+  rhuInterestedHitBins_.clear();
+  for (int i = tmpVect.front(); i <= tmpVect.back(); i++) 
+      rhuInterestedHitBins_.emplace_back(i);
+  
+  //tmpVect = iConfig.getUntrackedParameter< std::vector<int> >("RHU_FullBxBinRange", {-2,1});
+  //rhuFullBxBinRange_.clear();
+  //for (int i = tmpVect.front(); i <= tmpVect.back(); i++) 
+      //rhuFullBxBinRange_.emplace_back(i);
+
 }
 
 
@@ -154,15 +192,19 @@ FbcmNtuplizer_v3::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByToken(TokenTag_,handle);
 
   
-  int SiDieId;
+  //int SiDieId;
   for (edm::DetSetVector<SiPadDigiData>::const_iterator itDetSet = handle->begin() ;  itDetSet < handle->end() ; ++itDetSet) {
     // each Det in fbcmDets: multiple Data, but we have only one data
     if( itDetSet->size() != 1 )
       cout << "size == " << itDetSet->size() << endl; 
     for (std::vector<SiPadDigiData>::const_iterator Digidata_it = itDetSet->begin() ; Digidata_it < itDetSet->end() ; ++Digidata_it) {
       //const SiPadDigiData Digidata= *(Digidata_it);
-      SiDieId=Digidata_it->SiliconDieIndex() ;
-      SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
+      //SiDieId=Digidata_it->SiliconDieIndex() ;
+      //SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
+      SensorGroupIndex = Digidata_it->SiGroupIndex();
+      
+      if ( SensorGroupIndex > numberOfSensorGroups )
+          numberOfSensorGroups=SensorGroupIndex;
  
       SensorRho=Digidata_it->Radius() ;
       SensorArea=Digidata_it->Area() ;
@@ -180,20 +222,37 @@ FbcmNtuplizer_v3::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
  
       nValidDigiToAs=0;
       nValidDigiToTs=0;
-	  
+	  nTotalRhuDigi=0;
+      nInterstedRhuBins=0;
+      
       BxSlotCnt=0; // just to make sure starting from non-zero index if in the case of using BxSlotNo < 0. 
       for(auto hit : Digidata_it->BxSlotHitAnalysisVector() ) {	  
-	DigiHitStatus[BxSlotCnt] = hit.Bx_HitStatusInt();
-	nDigiHits[BxSlotCnt] = hit.nbrOfRecognizedHitsInBx(); 
-	BxSlotCnt++;
-			
-	for (auto ToaTot : hit.TotToaVectort()) {
-	  if ( (ToaTot.ToAToAStatusInt() == ToAStatus::FullyWithinBx || ToaTot.ToAToAStatusInt() == ToAStatus::WithinBx_LastsAfter ) ) {
-	    DigiToAs[nValidDigiToAs++] = ToaTot.ToA();
-	    if (ToaTot.IsToTValid())
-	      DigiToTs[nValidDigiToTs++] = ToaTot.ToT();
-	  }
-	}
+            DigiHitStatus[BxSlotCnt] = hit.Bx_HitStatusInt(); 
+            nDigiHits[BxSlotCnt] = hit.nbrOfRecognizedHitsInBx(); 
+            BxSlotCnt++; 
+                    
+            for (auto ToaTot : hit.TotToaVectort()) {
+              if ( (ToaTot.ToAToAStatusInt() == ToAStatus::FullyWithinBx || ToaTot.ToAToAStatusInt() == ToAStatus::WithinBx_LastsAfter ) ) {
+                  {
+                      DigiToAs[nValidDigiToAs] = ToaTot.ToA();
+                      PeakAmpl[nValidDigiToAs] = ToaTot.PeakAmplitude();
+                      nValidDigiToAs++;
+                  }
+                if (ToaTot.IsToTValid())
+                  DigiToTs[nValidDigiToTs++] = ToaTot.ToT();
+              
+                DigiRHUs[nTotalRhuDigi++] = ToaTot.SubBxBinNumber();
+                if (std::find(rhuInterestedHitBins_.begin(), rhuInterestedHitBins_.end(),ToaTot.SubBxBinNumber())!=rhuInterestedHitBins_.end())
+                    nInterstedRhuBins++;
+              
+              }
+
+               
+              
+                        
+                        
+
+            }
 		
       }
  
@@ -215,8 +274,7 @@ FbcmNtuplizer_v3::beginJob()
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
-FbcmNtuplizer_v3::endJob() 
+void FbcmNtuplizer_v3::endJob() 
 {
 }
 
@@ -224,16 +282,28 @@ FbcmNtuplizer_v3::endJob()
 
 void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) {
   
+  
+  //std::cout << rhuInterestedHitBins_.front() << ", " << rhuInterestedHitBins_.back() << "\n" ; 
+  //std::cout << rhuFullBxBinRange_.front() << ", " << rhuFullBxBinRange_.back() << "\n" ; 
+  
+    //for (auto v : rhuInterestedHitBins_) 
+      //std::cout << v << ", ";
+    //std::cout << "\n"; 
+    //for (auto v : rhuFullBxBinRange_) 
+      //std::cout << v << ", "; 
+  
   iSetup.get<FbcmGeometryRecord>().get(theFbcmGeom); 
   const std::vector<const FbcmStationGeom*> AllStatitons = theFbcmGeom->Stations();
   const std::vector<FbcmSiPadGeom const*> allSiPadGeoms = theFbcmGeom->SiPads();
   nbrOfDiesPerRing = AllStatitons[0]->NumOfDiesPerRing(); 
-
+  
+    
+  
   int SiDieId=0;
-  int SensorGroupIndex=0;
+  int SiDieGroupIndex=0;
   float padX, padY , padRho;
 
-  FixedValuesTree->Branch("SensorGroupIndex" , &SensorGroupIndex );
+  FixedValuesTree->Branch("SiDieGroupIndex" , &SiDieGroupIndex );
   FixedValuesTree->Branch("SensorX" , &padX );
   FixedValuesTree->Branch("SensorY" , &padY );
   FixedValuesTree->Branch("SensorRho" , &padRho );
@@ -248,8 +318,10 @@ void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) 
       padRho = siPad->surface().position().perp(); 
 	  
       SiDieId=siPad->id().SiliconDie();
-      SensorGroupIndex = SiDieId % nbrOfDiesPerRing;
+      SiDieGroupIndex = SiDieId % nbrOfDiesPerRing;
 	  
+        //std::cout << SiDieId <<", " << SiDieGroupIndex <<"\n"; 
+      
       FixedValuesTree->Fill();
     }
 }
@@ -257,12 +329,17 @@ void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) 
 
 
 // ------------ method called when ending the processing of a run  ------------
-/*
+
   void 
   FbcmNtuplizer_v3::endRun(edm::Run const&, edm::EventSetup const&)
   {
+      numberOfSensorGroups++; // becuse indecies begin from zero
+      
+      //hNSensorGroups->Fill(0.5, nbrOfDiesPerRing); 
+      hNSensorGroups->Fill(0.5, numberOfSensorGroups); 
+      
   }
-*/
+
 
 // ------------ method called when starting to processes a luminosity block  ------------
 /*

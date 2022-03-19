@@ -14,6 +14,7 @@ std::ostream& operator<<(std::ostream& o, ToaTotPair& TTpair) {
             << "\tToT: " << TTpair.ToT() << ", "
             << "\tToAToAStatus: " << TTpair.ToAToAStatus() << ", "
             << "\tSubBxBinNumber: " << TTpair.SubBxBinNumber() << ", "
+            << "\tPeak ampl: " << TTpair.PeakAmplitude() << ", "
             << "\tIsToTValid: " << TTpair.IsToTValid() << "\n" ;
 }
 

@@ -23,6 +23,7 @@ public:
   uint8_t StationNo,
   uint8_t SiliconDieNo,
   uint16_t SiPadNo,
+  uint8_t SensorGroupIndex,
   float radius,
   float Phi_Deg,
   float SiPadArea,
@@ -34,6 +35,7 @@ public:
 		  StationNo_(StationNo),
 		  SiliconDieNo_(SiliconDieNo),
 		  SiPadNo_(SiPadNo),
+          SensorGroupIndex_(SensorGroupIndex),
 		  Radius_(radius),
 		  Phi_Deg_(Phi_Deg),
 		  SiPadArea_(SiPadArea),
@@ -47,6 +49,7 @@ public:
 		  StationNo_(0),
 		  SiliconDieNo_(0),
 		  SiPadNo_(0),
+          SensorGroupIndex_(0),
 		  Radius_(0.0),
 		  Phi_Deg_(0.0),
 		  SiPadArea_(0.0),
@@ -63,6 +66,7 @@ public:
   int StationIndex() const { return (int)StationNo_; }
   int SiliconDieIndex() const { return (int)SiliconDieNo_; }
   int SiPadIndex() const { return (int)SiPadNo_; }
+  int SiGroupIndex() const { return (int)SensorGroupIndex_; }
   float Radius() const { return Radius_ ; }
   float Phi_Degrees() const { return Phi_Deg_ ; }
   float Area() const { return SiPadArea_ ; }
@@ -78,6 +82,7 @@ private:
   uint8_t StationNo_;
   uint8_t SiliconDieNo_;
   uint16_t SiPadNo_;
+  uint8_t SensorGroupIndex_;
   float Radius_ ;
   float Phi_Deg_ ;
   float SiPadArea_ ;
@@ -94,6 +99,7 @@ inline std::ostream& operator<<(std::ostream& o, const SiPadDigiData& D) {
 	<< "StationNo:" << (int) (D.StationIndex()) << ", " 
 	<< "SiDieNo:" << (int) (D.SiliconDieIndex()) << ", " 
 	<< "SiPadNo:" << (int) (D.SiPadIndex()) << ", " 
+    << "SiGroupIndex:" << (int) (D.SiGroupIndex()) << ", " 
 	<< "Radius:" << D.Radius() << ", " 
 	<< "PhiDeg:" << D.Phi_Degrees() << ", " 
 	<< "Area:" << D.Area() << ", " 
