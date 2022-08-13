@@ -31,8 +31,8 @@ namespace FbcmFE {
 		Complx Reciprocal();
 		void Real(double r) {real_=r;}
 		void Imag(double i) {imag_=i;}
-		void Set(double Re, double Im) { Real(Re); Imag(Im); }
-		void Set(Complx cplx) { Real(cplx.Real()); Imag(cplx.Imag()); }
+		Complx Set(double Re, double Im) { Real(Re); Imag(Im);          return Complx(Re,Im);}
+		Complx Set(Complx cplx) { Real(cplx.Real()); Imag(cplx.Imag()); return cplx;}
 		Complx conjugate()  { Imag(-Imag()); return *this;}
 		double abs()  { return mag();}
 		double abs2()  {  return magSq();}
@@ -42,11 +42,12 @@ namespace FbcmFE {
 
 		Complx operator+( const double &) const;//addition
 		Complx operator-( const double &) const;//subtraction
-		Complx operator+( Complx &) const;//addition
-		Complx operator-( Complx &) const;//subtraction
-		Complx operator*( Complx &) const;//multiplication
+		Complx operator+( Complx  ) const;//addition
+		Complx operator-( Complx ) const;//subtraction
+		//Complx operator*( Complx &) const;//multiplication
+        Complx operator*( Complx ) const;//multiplication
 		Complx operator*(const double &) const;//multiplication
-		Complx operator/( Complx &) const;
+		Complx operator/( Complx ) const;
 		Complx operator/(const double &) const;
 		const Complx &operator=( Complx );//assignment
 		bool const   operator==( Complx &) const;//equivalent
@@ -59,5 +60,7 @@ namespace FbcmFE {
 	};
 
 	typedef std::vector<Complx> ComplexSignalType;
+    
+    std::ostream& operator<<(std::ostream& o, Complx& cplx) ;
 }
 #endif

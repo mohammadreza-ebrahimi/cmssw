@@ -25,7 +25,7 @@ class SensorGroupInformation:
         return a
 
 
-    def __init__(self , sensorGroup , rhonBins = 12 , rhoStart = 3.75 , rhoEnd = 9.75):
+    def __init__(self , sensorGroup , rhonBins = 25 , rhoStart = 8.75 , rhoEnd = 21.25):
         self.SensorGroup = sensorGroup
         self.RhoNBins = rhonBins
         self.RhoStart = rhoStart
@@ -47,13 +47,15 @@ class SensorGroupInformation:
         self.nTotalRhuHitsPerBx = self.MakeHistoPerRho('nTotalRhuHitsPerBx' , 'Total number hits counted all RHU bins of a Bx')
         self.nOnesAtRhuBin = self.MakeHistoPerRho('nOnesAtRhuBin' , 'number of Ones (boolian: non-zero considered as one) in the interested RHU bin')
         
-        
-        self.TofRho = self.Make2DHistoPerRho( 'TofRho' , ';Rho;ToF' , int(round(200./(25./32./7.))) , -100 , 100 )
-        self.BxTofRho = self.Make2DHistoPerRho( 'BxTofRho' , ';Rho;ToF' , int(round(30./(25./32./7.))) , -15. , 15. )
-        self.ToaRho = self.Make2DHistoPerRho( 'ToaRho' , ';Rho;ToA' , int(round(30./(25./32./7.))) , -15. , 15. )
-        self.TotRho = self.Make2DHistoPerRho( 'TotRho' , ';Rho;ToT' , int(round(200./(25./32./7.))) , 0. , 50. )
-        self.RHURho = self.Make2DHistoPerRho( 'RhuRho' , ';Rho;RHU' , 30 , -15.0 , 15.0 )
-        self.PeakAmpl = self.Make2DHistoPerRho( 'PeakAmplitude' , ';Rho;Ampl' , 350 , 0.0 , 700.0 )
+        # 1./1.28/n or (25./32./n) is the sampling period @1.28Gbps. note that n is an arbitray intiger to make a fine time-bin, near to the 1/FS
+        # then if you rebin by n, this leads to the exact lpGBT sampling. 
+        # orginal sampling in the Ferquecy domiain is 1/FS
+        self.TofRho = self.Make2DHistoPerRho( 'TofRho' , ';Rho;ToF' , int(round(200./(1./1.28/7.))) , -100 , 100 )
+        self.BxTofRho = self.Make2DHistoPerRho( 'BxTofRho' , ';Rho;ToF' , int(round(30./(1./1.28/7.))) , -15. , 15. )
+        self.ToaRho = self.Make2DHistoPerRho( 'ToaRho' , ';Rho;ToA' , int(round(30./(1./1.28/7.))) , -15. , 15. )
+        self.TotRho = self.Make2DHistoPerRho( 'TotRho' , ';Rho;ToT' , int(round(200./(1./1.28/7.))) , 0. , 50. )
+        self.RHURho = self.Make2DHistoPerRho( 'RhuRho' , ';Rho;RHU' , 30 , -15.0 , 15.0 ) 
+        self.PeakAmpl = self.Make2DHistoPerRho( 'PeakAmplitude' , ';Rho;Ampl' , 350 , 0.0 , 700.0 ) 
 
     def FillGeometry(self , geoTree ):
         for entry in geoTree:
@@ -184,22 +186,6 @@ def main():
     for hit in allHits:
         for _,j in allSensorGroups.items():
             j.FillHit( hit )
-
-
-	simhitsPerRho.Divide( totalAreaPerRho )
-	digiHitsPerRho.Divide( totalAreaPerRho )
-	
-	fout = ROOT.TFile.Open( opt.outfile , "recreate")
-	simhitsPerRho.Write()
-	digiHitsPerRho.Write()
-	#sensorsPerRho.Write()
-	#totalAreaPerRho.Write()
-        simhitsPerRho.Scale( 1.0/7.0 )
-        digiHitsPerRho.Divide( totalAreaPerRho )
-        digiHitsPerRho.Scale( 1.0/3.0 )
-        fout.close()
-        return 0
-
 
     fout = ROOT.TFile.Open( opt.outfile , "recreate")
     for _,j in allSensorGroups.items():

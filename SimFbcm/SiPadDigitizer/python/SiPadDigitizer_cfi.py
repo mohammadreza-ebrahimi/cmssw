@@ -21,7 +21,7 @@ SiPadDigitizer = cms.PSet(
 									SiPadFrontEndBlock6,
 									SiPadFrontEndBlock7,
 									SiPadFrontEndBlock8 ), 
-    FE_SelectionType = cms.int32(1), # 0: automatic selection by sensor size; similar to TDR
+    FE_SelectionType = cms.int32(2), # 0: automatic selection by sensor size; similar to TDR
                                      # 1: automatic selection by SiDie group Index (copyNo); 
                                      #    good for similar sensor sizes, but various FE parameters (blocks). 
                                      # 2: only an unique SiPadFrontEnd configuration for all the sensors,

@@ -71,8 +71,9 @@ int main()
     //std:: cout << HitTotToaInfo ;
 
 	//FrontEnd.printInfo();
-	//FrontEnd.printInfo_with_AlignedTime();
+	FrontEnd.printInfo_with_AlignedTime();
     FrontEnd.printInfo_with_AlignedTime_BCM1FVME();
+    FrontEnd.printInfo_with_AlignedTime_ASIC2022();
 
 	return 0;
 }

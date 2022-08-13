@@ -29,6 +29,7 @@ namespace FbcmFE {
 	private:
 	    unsigned int CheckHitInBx();
 	    ToAStatus GetToAStatus(float ToA, float ToT, float HalfBxLen);
+        float updateToAwithTimewalkTable(float ToT, float *ToA);
 
 	    FftPreparation & FFtPrep_;
 
@@ -48,6 +49,10 @@ namespace FbcmFE {
         int nSubBins_ ; 
         double BinShift_;
         float pAmpl;
+        bool isTimewalkEnabled_;
+        std::vector < double > ToTentryVect_;
+        std::vector < double > timewalkDelayVect_;
+        std::vector < std::pair< double , double > > timewalkTable_; // (first, second) = (ToT, delay)
 
 	};
 

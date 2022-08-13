@@ -40,6 +40,28 @@
     <Include ref='Geometry/TrackerRecoData/data/PhaseII/Tracker_DD4hep_compatible_IT702_2021_03/trackerRecoMaterial.xml'/>
     <Include ref='Geometry/TrackerSimData/data/PhaseII/Tracker_DD4hep_compatible_2021_02/trackerProdCuts.xml'/>
     <Include ref='Geometry/TrackerSimData/data/PhaseII/Tracker_DD4hep_compatible_IT702_2021_03/pixelProdCuts.xml'/>
+    <Include ref='Geometry/FbcmCommonData/data/PhaseII/FbcmVolume/cmsFbcm.xml'/>
+    <Include ref='Geometry/FbcmCommonData/data/PhaseII/wideCoverage/v3/fbcm.xml'/>
+    <Include ref='Geometry/FbcmCommonData/data/PhaseII/wideCoverage/v3/FbcmSpecs.xml'/>
+    <Include ref='Geometry/FbcmSimData/data/PhaseII/FbcmSens.xml'/>
+
+
+    <Include ref='Geometry/TrackerCommonData/data/PhaseII/OuterTracker_ShortenedPixfwd/pixfwd.xml'/>
+
+
+
+    <Include ref='Geometry/TrackerCommonData/data/PhaseII/OuterTracker_ShortenedPixfwd/tracker.xml'/>
+    <Include ref='Geometry/TrackerCommonData/data/PhaseII/TiltedTracker615/pixel.xml'/>
+
+
+    <Include ref='Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/trackerStructureTopology.xml'/>
+    <Include ref='Geometry/TrackerCommonData/data/PhaseII/TiltedTracker613/pixelStructureTopology.xml'/>
+    <Include ref='Geometry/TrackerSimData/data/PhaseII/TiltedTracker404/trackersens.xml'/>
+    <Include ref='Geometry/TrackerSimData/data/PhaseII/TiltedTracker404/pixelsens.xml'/>
+    <Include ref='Geometry/TrackerRecoData/data/PhaseII/OuterTracker616_2020_04/trackerRecoMaterial.xml'/>
+    <Include ref='SimTracker/TrackerMaterialAnalysis/data/trackingMaterialGroups_ForPhaseII.xml'/>
+    <Include ref='Geometry/TrackerSimData/data/PhaseII/TiltedTracker404/trackerProdCuts.xml'/>
+    <Include ref='Geometry/TrackerSimData/data/PhaseII/TiltedTracker404/pixelProdCuts.xml'/>
     <Include ref='Geometry/TrackerSimData/data/trackerProdCutsBEAM.xml'/>
     <Include ref='Geometry/EcalCommonData/data/eregalgo/2026/v2/eregalgo.xml'/>
     <Include ref='Geometry/EcalCommonData/data/ectkcable/2026/v1/ectkcable.xml'/>
@@ -101,6 +123,7 @@
     <Include ref='Geometry/HcalSimData/data/hf.xml'/>
     <Include ref='Geometry/HcalSimData/data/hfpmt.xml'/>
     <Include ref='Geometry/HcalSimData/data/hffibrebundle.xml'/>
+
     <Include ref='Geometry/HcalSimData/data/CaloUtil/2026/v2c/CaloUtil.xml'/>
     <Include ref='Geometry/HGCalSimData/data/hgcsensv9.xml'/>
     <Include ref='Geometry/MuonSimData/data/PhaseII/v2/muonSens.xml'/>

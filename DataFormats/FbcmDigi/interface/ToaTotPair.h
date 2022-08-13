@@ -54,6 +54,7 @@ public:
         ToA_Status_=(char)ToA_Status;
         SubBxBinNo_=SubBxBinNo; 
         PeakAmplitude_=PeakAmpl;       }
+    
 
     float ToA() const {return TimeOfArrival;}
     float ToT() const {return TimeOverThreshold;}

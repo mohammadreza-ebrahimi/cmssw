@@ -38,6 +38,7 @@ namespace FbcmFE {
         void printInfo();
         void printInfo_with_AlignedTime();
         void printInfo_with_AlignedTime_BCM1FVME();
+        void printInfo_with_AlignedTime_ASIC2022();
         void PrintInputCurrent_uA();
         void Print_TIAOutput_Voltage_mV();
         void Print_ShaperOutput_Voltage_mV();
@@ -50,7 +51,8 @@ namespace FbcmFE {
 
 		void SetSubmoduleParameters();
         void setBcm1fVME_Parameters();
-        void Set_TIA_InputSignal(SignalType & PulseShape);
+        void setASIC2022_Parameters();
+        void prepareInputSignal(SignalType & PulseShape);
 
         FftPreparation & fftPrep;
 		const edm::ParameterSet * ActiveFrontEndParamPtr;
@@ -66,16 +68,35 @@ namespace FbcmFE {
 		SignalType DiscrimShaperOutSig_;
 		LogicSignalType CFD_ZeroCCompOutSig_;
 		LogicSignalType CFD_ArmingCompOutSig_;
-		LogicSignalType CFD_LogicOutput_;
+		LogicSignalType signalLogicOutput_;
         //----- VME BCM1F ------------
         LogicSignalType vmeCompOutSig_;
         Comparator vmeComp;
         VmeLogicCircuit VMELogicCirc;
         //----- end VME BCM1F ------------
-		Filter TIA_Hf_;
+		//----------------- new FBCM FE 2022 ------------
+        Filter preAmp_Hf_; 
+		Filter boosterAmp_Hf_; 
+		Filter shaperFE_Hf_; 
+        SignalType preAmpOutputSig_;
+		SignalType boosterOutputSig_;
+		SignalType limiterFEv2OutputSig_;
+        LinearCircuitFreqDomain preAmp_;
+		LinearCircuitFreqDomain boosterAmp_;
+        NonlinearLimiter limiterFEv2_;
+		LinearCircuitFreqDomain shaperFEv2_;
+        //LogicSignalType asicComparatorOutSig_; // no need. 
+        Comparator asicComparator;
+
+        
+        //------- end of the new FBCM FE 2022 -----------
+        
+        Filter TIA_Hf_;
 		Filter Shaper_Hf_;
 		Filter Delay_Hf_;
 		Filter CFD_ShaperHf_;
+        
+       
 		LinearCircuitFreqDomain TIA_;
 		NonlinearLimiter Limiter_;
 		LinearCircuitFreqDomain Shaper_;
@@ -86,6 +107,8 @@ namespace FbcmFE {
 		Comparator Arming_Comp;
 		LogicCircuit OutputLogicCirc;
 		HitAnalyzer Hit_Analyzer;
+        
+        //string testFileDir; 
 		
 		
 };

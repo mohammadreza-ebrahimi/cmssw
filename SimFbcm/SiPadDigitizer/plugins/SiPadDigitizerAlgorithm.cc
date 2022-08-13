@@ -644,7 +644,9 @@ int SensorGroupIndex = SiPadDetId.SiliconDie() % nbrOfDiesPerRing;
         break;
         
         case 2: // 2: selection by SiDie group Index; 
-                // good for similar sensor sizes, but various FE parameters. 
+                // all sensors assigned unique SiDieId, but with different area. 
+                // all sensors use the first FE parameters block. 
+                // No grouping in the sensors based on the SiDieID. 
             SensorGroupIndex=0;
             Area_FeParamPtr = FeParamSelector.SelectFrontEndConfig(SiPadArea, SensorGroupIndex );
         break;

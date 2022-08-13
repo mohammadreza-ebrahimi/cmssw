@@ -24,11 +24,11 @@ namespace FbcmFE {
 		return atan2(imag_,real_);
 	}
 
-	Complx Complx::operator+(Complx& cplx2) const {
+	Complx Complx::operator+(Complx cplx2) const {
 		return Complx(real_ + cplx2.Real(),imag_+ cplx2.Imag());
 	}
 
-	Complx Complx::operator-(Complx& cplx2) const {
+	Complx Complx::operator-(Complx cplx2) const {
 		return Complx(real_ - cplx2.Real(),imag_ - cplx2.Imag());
 	}
 
@@ -40,7 +40,13 @@ namespace FbcmFE {
 		return Complx(real_ - dlm, imag_);
 	}
 
-	Complx Complx::operator*(Complx& cplx2) const {
+	// Complx Complx::operator*(Complx& cplx2) const {
+		// double tmpRe=(real_ * cplx2.Real()) - (imag_ * cplx2.Imag());
+		// double tmpIm=(real_ * cplx2.Imag()) + (imag_ * cplx2.Real());
+		// return Complx(tmpRe,tmpIm);
+	// }
+    
+    Complx Complx::operator*(Complx cplx2) const {
 		double tmpRe=(real_ * cplx2.Real()) - (imag_ * cplx2.Imag());
 		double tmpIm=(real_ * cplx2.Imag()) + (imag_ * cplx2.Real());
 		return Complx(tmpRe,tmpIm);
@@ -52,9 +58,10 @@ namespace FbcmFE {
 		return Complx(tmpRe,tmpIm);
 	}
 
-	Complx Complx::operator/(Complx& cplx2) const {
+
+	Complx Complx::operator/(Complx cplx2) const {
 		double tmpRe=(real_ * cplx2.Real() + imag_ * cplx2.Imag())/cplx2.magSq();
-		double tmpIm=(real_ * cplx2.Imag() - imag_ * cplx2.Real())/cplx2.magSq();
+		double tmpIm=(- real_ * cplx2.Imag() + imag_ * cplx2.Real())/cplx2.magSq();
 		return Complx(tmpRe,tmpIm);
 	}
 
@@ -94,6 +101,13 @@ namespace FbcmFE {
 			return false;
 	}
 
+    std::ostream& operator<<(std::ostream& o, Complx& cplx) {
+
+      o << "Re:" << cplx.Real() << ", " 
+        << "Im:" << cplx.Imag() << "\n" ;
+
+      return o ;
+    }
 
 }  
 

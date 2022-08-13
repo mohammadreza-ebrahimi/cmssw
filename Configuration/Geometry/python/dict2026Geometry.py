@@ -80,8 +80,45 @@ commonDict = {
             'Geometry/CMSCommonData/data/cavern/2021/v1/cavern.xml',
             'Geometry/CMSCommonData/data/cavernFloor/2017/v1/cavernFloor.xml',
 			'Geometry/FbcmCommonData/data/PhaseII/FbcmVolume/cmsFbcm.xml',
-			'Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v2/fbcm.xml',
-			'Geometry/FbcmCommonData/data/PhaseII/MultiSize_MultiRadius/v2/FbcmSpecs.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/wideCoverage/v2/fbcm.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/wideCoverage/v2/FbcmSpecs.xml',
+			'Geometry/FbcmSimData/data/PhaseII/FbcmSens.xml',
+        ],
+        5 : [
+            'Geometry/CMSCommonData/data/FieldParameters.xml',
+        ],
+        "sim" : [
+            'from Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi import *',
+        ],
+        "reco" : [
+            'from Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi import *',
+        ],
+        "era" : "phase2_common, phase2_trigger",
+    },
+    "O9" : {
+        1 : [
+            'Geometry/CMSCommonData/data/materials/2021/v1/materials.xml',
+            'Geometry/CMSCommonData/data/rotations.xml',
+            'Geometry/CMSCommonData/data/extend/v2/cmsextent.xml',
+            'Geometry/CMSCommonData/data/cavernData/2021/v1/cavernData.xml',
+            'Geometry/CMSCommonData/data/cms/2026/v5/cms.xml',
+            'Geometry/CMSCommonData/data/cmsMother.xml',
+            'Geometry/CMSCommonData/data/eta3/etaMax.xml',
+            'Geometry/CMSCommonData/data/cmsTracker.xml',
+            'Geometry/CMSCommonData/data/caloBase/2026/v5/caloBase.xml',
+            'Geometry/CMSCommonData/data/cmsCalo.xml',
+            'Geometry/CMSCommonData/data/muonBase/2026/v5/muonBase.xml',
+            'Geometry/CMSCommonData/data/cmsMuon.xml',
+            'Geometry/CMSCommonData/data/mgnt.xml',
+            'Geometry/CMSCommonData/data/beampipe/2026/v3/beampipe.xml',
+            'Geometry/CMSCommonData/data/cmsBeam/2026/v1/cmsBeam.xml',
+            'Geometry/CMSCommonData/data/muonMB.xml',
+            'Geometry/CMSCommonData/data/muonMagnet.xml',
+            'Geometry/CMSCommonData/data/cavern/2021/v1/cavern.xml',
+            'Geometry/CMSCommonData/data/cavernFloor/2017/v1/cavernFloor.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/FbcmVolume/cmsFbcm.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/wideCoverage/v3/fbcm.xml',
+			'Geometry/FbcmCommonData/data/PhaseII/wideCoverage/v3/FbcmSpecs.xml',
 			'Geometry/FbcmSimData/data/PhaseII/FbcmSens.xml',
         ],
         5 : [
@@ -1306,6 +1343,7 @@ detectorVersionDict = {
     ("O5","T21","C11","M6","F4","I13") : "D73",
     ("O7","T21","C14","M9","F6","I11") : "D74",
 	("O8","T24","C14","M9","F6","I11") : "D80",
+    ("O9","T24","C14","M9","F6","I11") : "D81",
  }
 
 deprecatedDets = set([ "D1", "D2", "D3", "D5", "D6" , "D7", "D4", "D8" , "D9", "D12", "D13", "D15", "D10", "D11", "D14", "D16", "D17", "D18", "D19", "D20", "D21", "D22", "D23", "D24", "D25", "D26", "D27", "D28", "D29", "D30", "D31", "D32", "D33", "D34", "D36", "D37", "D38", "D39", "D40", "D42", "D35", "D41", "D43", "D44", "D45", "D46", "D48", "D47", "D50", "D51", "D52", "D53", "D54", "D55", "D56", "D57", "D58", "D59", "D61", "D62", "D63", "D64", "D65", "D66", "D67", "D69", "D71", "D72", "D73", "D74", "D75", "D78", "D79", "D87", "D89", "D90", "D49", "D60", "D68", "D70", "D76", "D77", "D80", "D81", "D82", "D83", "D84", "D85"])
