@@ -5,10 +5,19 @@ import FWCore.ParameterSet.Config as cms
 
 from Configuration.Geometry.GeometryDD4hepExtended2026D81_cff import *
 
+<<<<<<< HEAD
 # tracker
 from Geometry.CommonTopologies.globalTrackingGeometry_cfi import *
 from RecoTracker.GeometryESProducer.TrackerRecoGeometryESProducer_cfi import *
 from Geometry.TrackerGeometryBuilder.TrackerAdditionalParametersPerDet_cfi import *
+=======
+# common
+from Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi import *
+
+# tracker
+from Geometry.CommonTopologies.globalTrackingGeometry_cfi import *
+from RecoTracker.GeometryESProducer.TrackerRecoGeometryESProducer_cfi import *
+>>>>>>> d43c9b2f129 (New Fbcm ASCI(2022Aug) implemented)
 from Geometry.TrackerGeometryBuilder.trackerParameters_cff import *
 from Geometry.TrackerNumberingBuilder.trackerTopology_cfi import *
 from Geometry.TrackerGeometryBuilder.idealForDigiTrackerGeometry_cff import *

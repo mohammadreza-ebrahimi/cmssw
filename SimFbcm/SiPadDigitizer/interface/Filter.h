@@ -15,6 +15,7 @@
 #include <cmath>
 #include <iostream>
 #include "SimFbcm/SiPadDigitizer/interface/Complx.h"
+#include <fstream>
 
 
 namespace FbcmFE {
@@ -28,6 +29,9 @@ namespace FbcmFE {
 		IdealDelay,
 		FirstOrderPadeDelay,
 		CDFShaper,
+        preAmp_Filter,
+        booster_Filter,
+        shaperFEv2_Filter,
 		NotSet
 	};
 
@@ -46,6 +50,12 @@ namespace FbcmFE {
 		void RunIdealDelayFilter();
 		void Run1stPadeDelayFilter();
 		void RunCDFShaper();
+        
+        void RunPreAmpFilter_old();
+        void RunPreAmpFilter();
+		void RunBoosterFilter();
+		void RunBoosterShaperFilter();
+        
         FilterType Type_;
 		ComplexSignalType Filter_Tf;
 		SignalType & freq_GHz_ ;
@@ -64,6 +74,15 @@ namespace FbcmFE {
 		double CDF_Delay; // ns
 		double CFD_Gain; // gain [V/V]
 		double Tau_CFDsh; // ns
+        
+        ///---------------
+        double R12, C2, R1, R0, Cf0, Cf1, R5, G0, C1, E0, G1;
+        double R8, R9, R10, R11, C7, C8, C9, R6, C10, C0, G2,
+               R2, C4, G3, R3, C3, C5, G4, R4, C6, E5, R7, C11, R13 ;
+
+        
+        
+        
 		
 	};
 

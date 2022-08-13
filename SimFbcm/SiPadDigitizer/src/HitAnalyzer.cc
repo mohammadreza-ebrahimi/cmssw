@@ -8,7 +8,6 @@
 #include "SimFbcm/SiPadDigitizer/interface/HitAnalyzer.h"
 
 namespace FbcmFE {
-
     HitAnalyzer::HitAnalyzer(FftPreparation & FFtPrep,LogicSignalType & CFD_LogicalSignal, const SignalType & Signal2PeakAmplSampler):
     FFtPrep_(FFtPrep),
     CFD_LogicalSignal_(CFD_LogicalSignal),
@@ -16,7 +15,9 @@ namespace FbcmFE {
     BX_Duration_(25.0),
     FS_(FFtPrep_.SamplingRepetition()),
     BxHitStatus(HitStatus::Zero),
-    NumOfRecognizedHits(0)	{
+    NumOfRecognizedHits(0),
+    isTimewalkEnabled_(0)
+	{
 		timeVectAligned_=FFtPrep_.TimeVectZeroCenter()-AlignerDelay_;
 		};
 
@@ -71,8 +72,19 @@ namespace FbcmFE {
                     HitDetected=false;
                     ToA=timeVectAligned_[start_]-(BXC_SlotNo_*BX_Duration_);
                     ToT=timeVectAligned_[end_]-timeVectAligned_[start_];
+                    
+                    // -- update ToA with timewalk, if needed ------------
+                   //std::cout << "toa: " << ToA << ", ToT: " << ToT << "\n";
+                    if(isTimewalkEnabled_)
+                        updateToAwithTimewalkTable(ToT, &ToA);
+                   
+                  //std::cout << "after update: toa: " << ToA << ", ToT: " << ToT << "\n";                   
+                    //----------------------------------------------------
+                    
                     SubBxBinNo= (int16_t)(round((ToA-binshift)/BinLen_));
-
+                    
+                    
+                    
                     ToAState=GetToAStatus(ToA,ToT,HalfBxLen);
                     
                     pAmpl = Signal2PeakAmplSampler_[start_];
@@ -99,11 +111,19 @@ namespace FbcmFE {
 
                     HitDetected = false;
                     ToA=timeVectAligned_[start_]-(BXC_SlotNo_*BX_Duration_);
-                    SubBxBinNo= (int16_t)(round((ToA-binshift)/BinLen_));
                     end_=i-1;
                     ToT=timeVectAligned_[end_]-timeVectAligned_[start_];
                     //ToT=1000.0;
 
+
+                    // -- update ToA with timewalk, if needed -----------
+                    // however, for invalid ToT, no need to updated ToA
+                     if(isTimewalkEnabled_)
+                        updateToAwithTimewalkTable(ToT, &ToA);
+                    
+                    //----------------------------------------------------
+                    
+                    SubBxBinNo= (int16_t)(round((ToA-binshift)/BinLen_));
                     ToAState=GetToAStatus(ToA,ToT,HalfBxLen);
 
                     pAmpl = Signal2PeakAmplSampler_[start_];
@@ -183,6 +203,25 @@ namespace FbcmFE {
         //BinLen_  = FEParamPtr->getParameter< double >("BinLength");
         BinLen_ = BX_Duration_ / nSubBins_;
         
+        isTimewalkEnabled_ = FEParamPtr->getParameter< bool >("ApplyTimewalk");
+        if(isTimewalkEnabled_)
+        {
+        edm::ParameterSet TimeWalktablePSet = FEParamPtr->getParameter< edm::ParameterSet >("TimewalkTable"); 
+        
+        ToTentryVect_ = TimeWalktablePSet.getParameter< std::vector<double> >("ToTentry"); 
+        timewalkDelayVect_ = TimeWalktablePSet.getParameter< std::vector<double> >("timewalkDelay"); 
+        timewalkTable_.clear(); 
+        if (ToTentryVect_.size() == timewalkDelayVect_.size()) 
+            for (unsigned int j=0 ; j < ToTentryVect_.size() ; j++ ){ 
+                timewalkTable_.emplace_back( std::make_pair(ToTentryVect_[j], timewalkDelayVect_[j]) );            
+                }
+        else
+             throw cms::Exception("error SiPadFrontEndParameters.py") << "The lenght of ToTentry and timewalkDelay should be the same"; 
+         
+         //for (auto v:timewalkTable_)
+             //std::cout << v.first << " " << v.second << "\n";
+        }
+        
 		// std::cout << "BX_Duration_: " << BX_Duration_ << "\n"
 					// << "AlignerDelay_: " << AlignerDelay_ << "\n"
 					// << "ToAUpperCut_: " << ToAUpperCut_ << "\n"
@@ -191,6 +230,26 @@ namespace FbcmFE {
 					// << "BinShift_: " << BinShift_ << "\n" ;
 					
 	}
+    
+    float HitAnalyzer::updateToAwithTimewalkTable(float ToT, float *ToA){
+        
+        float ToaDelay=0;
+        if (ToT < timewalkTable_.front().first )
+            ToaDelay = timewalkTable_.front().second;
+        else if (ToT >= timewalkTable_.back().first)
+            ToaDelay = timewalkTable_.back().second;
+        else
+        {
+            for (unsigned int j=0 ; j < timewalkTable_.size()-1 ; j++ ){ 
+                //std::cout << v.first << " " << v.second << "\n";
+                if (ToT >= timewalkTable_[j].first && ToT < timewalkTable_[j+1].first )
+                    ToaDelay = timewalkTable_[j].second;                
+            }
+        }
+        *ToA = *ToA - ToaDelay;
+        
+        return *ToA;
+    }
 
 }
 

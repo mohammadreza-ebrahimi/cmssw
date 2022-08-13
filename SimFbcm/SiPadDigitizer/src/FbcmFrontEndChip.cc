@@ -7,6 +7,7 @@
 
 #include "SimFbcm/SiPadDigitizer/interface/FbcmFrontEndChip.h"
 
+
 namespace FbcmFE {
 
 FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
@@ -22,12 +23,30 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
         DiscrimShaperOutSig_(nFFT_),
         CFD_ZeroCCompOutSig_(nFFT_),
 		CFD_ArmingCompOutSig_(nFFT_),
-		CFD_LogicOutput_(nFFT_),
+		signalLogicOutput_(nFFT_),
         //----- VME BCM1F ------------
         vmeCompOutSig_(nFFT_),
         vmeComp(Shaper_OutputSig_,vmeCompOutSig_),
-        VMELogicCirc(vmeCompOutSig_,CFD_LogicOutput_),
+        VMELogicCirc(vmeCompOutSig_,signalLogicOutput_),
         //----- end of VME BCM1F ------------
+        
+        //----------------- new FBCM FE 2022 ------------
+        preAmp_Hf_(freqVect_GHz),
+        boosterAmp_Hf_(freqVect_GHz),
+        shaperFE_Hf_(freqVect_GHz),
+        preAmpOutputSig_(nFFT_),
+        boosterOutputSig_(nFFT_),
+        limiterFEv2OutputSig_(nFFT_),
+        preAmp_(SiPadReceivedSig_,preAmpOutputSig_, preAmp_Hf_),
+        boosterAmp_(preAmpOutputSig_,boosterOutputSig_, boosterAmp_Hf_),
+        limiterFEv2_(boosterOutputSig_,limiterFEv2OutputSig_),
+        shaperFEv2_(limiterFEv2OutputSig_, Shaper_OutputSig_, shaperFE_Hf_ ),
+        //asicComparatorOutSig_(nFFT_),
+        asicComparator(Shaper_OutputSig_,signalLogicOutput_),
+
+                
+        //------- end of the new FBCM FE 2022 -----------
+        
 		TIA_Hf_(freqVect_GHz),
 		Shaper_Hf_(freqVect_GHz),
 		Delay_Hf_(freqVect_GHz), // IdealDelay or FirstOrderPadeDelay
@@ -40,8 +59,8 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
 		CFD_Shaper_(DiscrimSig_,DiscrimShaperOutSig_,CFD_ShaperHf_),
 		ZC_Comp(DiscrimShaperOutSig_,CFD_ZeroCCompOutSig_),
 		Arming_Comp(Shaper_OutputSig_,CFD_ArmingCompOutSig_),
-		OutputLogicCirc(CFD_ZeroCCompOutSig_,CFD_ArmingCompOutSig_,CFD_LogicOutput_),
-		Hit_Analyzer(FFtPrep, CFD_LogicOutput_, Shaper_OutputSig_)
+		OutputLogicCirc(CFD_ZeroCCompOutSig_,CFD_ArmingCompOutSig_,signalLogicOutput_),
+		Hit_Analyzer(FFtPrep, signalLogicOutput_, Shaper_OutputSig_)
     {
 
 } ;
@@ -59,7 +78,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
                     << DiscrimShaperOutSig_[i] << "\t"
                     << CFD_ZeroCCompOutSig_[i] << "\t"
                     << CFD_ArmingCompOutSig_[i] << "\t"
-                    << CFD_LogicOutput_[i] << "\n";
+                    << signalLogicOutput_[i] << "\n";
 
         myfile.close();
         std::cout << "done! \n";
@@ -77,7 +96,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
                     << TIA_OutputSig_[i] << "\t"
                     << Shaper_OutputSig_[i] << "\t"
                     << vmeCompOutSig_[i] << "\t"
-                    << CFD_LogicOutput_[i] << "\n";
+                    << signalLogicOutput_[i] << "\n";
 
         myfile.close();
         std::cout << "BCMF VME done! \n";
@@ -100,10 +119,28 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
                     << DiscrimShaperOutSig_[i] << "\t"
                     << CFD_ZeroCCompOutSig_[i] << "\t"
                     << CFD_ArmingCompOutSig_[i] << "\t"
-                    << CFD_LogicOutput_[i] << "\n";
+                    << signalLogicOutput_[i] << "\n";
 
         myfile.close();
         std::cout << "done! \n";
+	}
+    
+    void FbcmFrontEndChip::printInfo_with_AlignedTime_ASIC2022(){
+       SignalType & timeVectAligned_=Hit_Analyzer.GetAlignedTimeVect();
+        std::ofstream myfile;
+      myfile.open ("/afs/cern.ch/work/m/msedghi/private/tempOutputs/ResultASIC2022.txt");
+
+        for (unsigned int i=0; i < nFFT_; i++ )
+            myfile << timeVectAligned_[i] << "\t"
+                    << SiPadReceivedSig_[i] << "\t"
+                    << preAmpOutputSig_[i] << "\t"
+                    << boosterOutputSig_[i] << "\t"
+                    << Shaper_OutputSig_[i] << "\t"
+                    << signalLogicOutput_[i] << "\n"; 
+                    
+                    
+        myfile.close();
+        std::cout << "New ASIC done! \n";
 	}
 
 
@@ -124,7 +161,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
 
 
 
-	void FbcmFrontEndChip::Set_TIA_InputSignal(SignalType & PulseShape){
+	void FbcmFrontEndChip::prepareInputSignal(SignalType & PulseShape){
 	    double Dimention=e_q/_ns/_uA; // the current will be in micro Ampere (uA)
 		for (unsigned int i=0; i< nFFT_ ; i++ )
 			SiPadReceivedSig_[i]=PulseShape[i]*Dimention; // uA
@@ -177,6 +214,23 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
 	
 	}
 
+    void FbcmFrontEndChip::setASIC2022_Parameters() {
+
+    edm::ParameterSet ASICParamPset; 
+    ASICParamPset = ActiveFrontEndParamPtr->getParameter< edm::ParameterSet >("FE2022ASIC");
+		
+	preAmp_Hf_.SetParameters( ActiveFrontEndParamPtr ) ;
+	boosterAmp_Hf_.SetParameters( ActiveFrontEndParamPtr ) ;
+    shaperFE_Hf_.SetParameters( ActiveFrontEndParamPtr ) ;
+
+	limiterFEv2_.SetAbsMaxOut(ActiveFrontEndParamPtr->getParameter< double >("MaxFEOutputVoltage"));
+	
+    asicComparator.SetComparatorThresholds(ASICParamPset.getParameter< double >("ComparatorThreshold"),
+									       ASICParamPset.getParameter< double >("ComparatorThreshold"));
+                                           
+	Hit_Analyzer.SetParameters( ActiveFrontEndParamPtr ) ;
+	
+	}
 
 	void FbcmFrontEndChip::RunFECircuit(std::pair<float, const edm::ParameterSet * > Area_FeParamPtr){
 		
@@ -205,7 +259,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
             //std::cout << "FrontEndType_" << FrontEndType_ << "\n";
             TIA_Hf_.SetSensorArea( SensorArea ); 
             SetSubmoduleParameters();
-            Set_TIA_InputSignal(fftPrep.TimeDomainSignal());
+            prepareInputSignal(fftPrep.TimeDomainSignal());
             TIA_Hf_.RunFilter(FilterType::TIA_Filter);
             TIA_.CalculateOutputSignal();
             Limiter_.RunLimiter();
@@ -222,11 +276,11 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
             
             break;
             
-             case 1: // BCM1F VME
-             //std::cout << "FrontEndType_" << FrontEndType_ << "\n";
+            case 1: // BCM1F VME
+                //std::cout << "FrontEndType_" << FrontEndType_ << "\n";
                 TIA_Hf_.SetSensorArea( SensorArea ); 
                 setBcm1fVME_Parameters(); // should be updated
-                Set_TIA_InputSignal(fftPrep.TimeDomainSignal());
+                prepareInputSignal(fftPrep.TimeDomainSignal());
                 TIA_Hf_.RunFilter(FilterType::TIA_Filter);
                 TIA_.CalculateOutputSignal();
                 Limiter_.RunLimiter();
@@ -234,8 +288,24 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
                 Shaper_.CalculateOutputSignal();
                 vmeComp.RunComparator();
                 VMELogicCirc.RunLogic();
-             
-             break;
+            break;
+            
+            case 2: // FBCM_newFE_2022 (EDR)
+                //std::cout << "This is New ASIC: FrontEndType_" << FrontEndType_ << "\n";
+                preAmp_Hf_.SetSensorArea( SensorArea ); 
+                setASIC2022_Parameters(); // should be updated
+                prepareInputSignal(fftPrep.TimeDomainSignal()); // it preprares SiPadReceivedSig_
+                preAmp_Hf_.RunFilter(FilterType::preAmp_Filter);
+                preAmp_.CalculateOutputSignal();
+                boosterAmp_Hf_.RunFilter(FilterType::booster_Filter);
+                boosterAmp_.CalculateOutputSignal();
+                limiterFEv2_.RunLimiter();
+                shaperFE_Hf_.RunFilter(FilterType::shaperFEv2_Filter);
+                shaperFEv2_.CalculateOutputSignal();
+                asicComparator.RunComparator();
+                
+            break;
+            
             
             default:
               throw cms::Exception("Wrong FrontEnd Type") << " FrontEndType in SiPadFrontEndBlockX is invalid\n";

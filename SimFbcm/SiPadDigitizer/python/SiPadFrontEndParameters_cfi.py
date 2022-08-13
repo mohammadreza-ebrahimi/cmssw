@@ -2,24 +2,25 @@ import FWCore.ParameterSet.Config as cms
 
 
 fftSimParam = cms.PSet(
-	NumOfFFT_Points = cms.int32(2048), # Length of signal, This should be an integer number with power of 2
+	NumOfFFT_Points = cms.int32(2048), #2048 and 10FS Length of signal, This should be an integer number with power of 2
 	SamplingRepetition = cms.int32(10) # FS: Sampling repetition per ns [1/ns]
 )
-TofCharge_Test = cms.PSet(
-	TofVector =  cms.vdouble(0.0, 25.0), 
-	ChargeVect = cms.vdouble(3.*6242, 3.*6242 ), 
+TofCharge_Test = cms.PSet( 
+	TofVector =  cms.vdouble(0.0), 
+	ChargeVect = cms.vdouble(1*6242,), # 6241.51 = 1fC
     # 1, 1.1, 2, 3, 5, 6, 8 
-	TestSensorSize= cms.double(0.0331) # cm2 
+	TestSensorSize= cms.double(0.0289) # cm2 
     # 0.0225	0.0289	0.0335	0.0385	0.0462	0.0537	0.0658	0.0802	0.1327
 )
 
 SiHitPulseShapeParam =cms.PSet(
-	HitPulseParam =  cms.vdouble(0.6294422, 99.999855, 40.371655, 1.0, 3.5/2.2) # 0.6294422, 99.999855, 40.371655, 1.0, 3.5/2.2
+	HitPulseParam =  cms.vdouble(0.6294422, 99.999855, 40.371655, 1.0, 1.5887) # 0.6294422, 99.999855, 40.371655, 1.0, 3.5/2.2
 ) 
 
 SiPadFrontEndBlock0 = cms.PSet(
-	FrontEndType = cms.int32(1), # 0:CFD_TDR, 1: BCM1F VME, 2: FixedThreshold_only+timewalk compemsation
+	FrontEndType = cms.int32(2), # 0:CFD_TDR, 1: BCM1F VME, 2: FixedThreshold_only+timewalk compemsation
                            # 3: bcm1f_VME, 4: bcm1f_uTCA, 5: FBCMNewASIC_LE, 6: FBCMNewASIC_CFD 
+    
     GoodForSizeRange = cms.vdouble(0.0,0.0255), # cm2, range from minimum size through maximum size
 	BlockIndex = cms.int32(0),
 	MaxFEOutputVoltage = cms.double(700.0), # mV
@@ -52,7 +53,7 @@ SiPadFrontEndBlock0 = cms.PSet(
 	ToALowerCut = cms.double(-30.0), # ns // for BIB study, more than one BX should be investigated
 	#BinLength = cms.double(6.25), # ns, usefull for RHU
     NumOfSubBXbins = cms.int32(4), # RHU num of bins. 
-	BinOffset = cms.double(0.0), # ns, plus/minus small time for synchronization to the LHC clk!
+	BinOffset = cms.double(0.0), # ns, plus/minus small time for synchronization to the LHC clk! 
     # if the correct RHU is the third one with index of 2 (amonung 0,1,2,3), so it is good to set BinOffset=2*BinLength
    
     ##--------- BMC1F VME param ------------
@@ -64,8 +65,62 @@ SiPadFrontEndBlock0 = cms.PSet(
     # but for flexibility, it is set via this interface
     VME_doublePulseResol_Updating = cms.double(7.0), # should be 7 ns
     VME_doublePulseResol_NonUpdating = cms.double(12.0), # should be 12 ns
-    ##--------- BMC1F VME param ------------
-	
+    ## --------- BMC1F VME param ------------
+    
+    ##--------- New FBCM ASIC-2022 param ------------
+    ApplyTimewalk = cms.bool(True), # True or False, if it is True, then a lookup table should be given. 
+    
+    TimewalkTable = cms.PSet( # timewalk(ns) vs ToT(ns)
+        # if the detected hit_ToT falls between two ToT enteries (including the lower value),
+        # then the lower limitt is assigned. e.g. if ToT=3ns --> delay=9.02
+        ToTentry      = cms.vdouble(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40),
+        timewalkDelay = cms.vdouble(9.97, 9.02, 8.18, 7.43, 6.76, 6.16, 5.62, 5.14, 4.71, 4.33, 3.98, 3.67, 3.38, 
+                                    3.13, 2.9, 2.69, 2.5, 2.33, 2.18, 2.03, 1.9),
+        ),
+    
+    FE2022ASIC =cms.PSet( 
+        C1 = cms.double(3.0), # pF
+        Cf0 = cms.double(0.0447), # pF
+        Cf1 = cms.double(0.0447), # pF
+        R12 = cms.double(50.872), # kOhm
+        G0 = cms.double(44.0 ), # mS
+        R0 = cms.double(67.0), # kOhm
+        C2 = cms.double(0.320), # pF
+        G1 = cms.double(-1.0), # mS
+        R1 = cms.double(1.0), # kOhm
+        C3 = cms.double(0.200), # pF
+        E0 = cms.double(0.95 ), # V/V
+        R5 = cms.double(0.458), # kOhm
+        R6 = cms.double(10.0), # kOhm
+        C0 = cms.double(0.16), # pF
+        G2 = cms.double(1.0), # mS
+        R2 = cms.double(452.0), # kOhm
+        C4 = cms.double(0.119), # pF
+        G3 = cms.double(-1.0), # mS
+        R3 = cms.double(1.0), # kOhm
+        C5 = cms.double(0.3), # pF
+        G4 = cms.double(-1.0), # kOhm
+        R4 = cms.double(1.0), # kOhm
+        C6 = cms.double(0.3), # pF
+        E5 = cms.double(1.0), # V/V
+        R7 = cms.double(1.23), # kOhm
+        C11 = cms.double(0.015), # pF
+        R13 = cms.double(100.0), # kOhm
+        R8 = cms.double(12.0), # kOhm
+        R9 = cms.double(12.0), # kOhm
+        R10 = cms.double(12.0), # kOhm
+        R11 = cms.double(20.0), # kOhm
+        C7 = cms.double(0.02), # pF
+        C8 = cms.double(0.02), # pF
+        C9 = cms.double(0.02), # pF
+        C10 = cms.double(0.04), # pF
+        ComparatorThreshold = cms.double(25.0), # mV, # assuming both High_th and Low_th are the same,
+                                                      # otherwise pls update setASIC2022_Parameters() method 
+                                                      # in FbcmFrontEndChip.cc file
+                                                      
+    )
+    
+    ##--------- New FBCM ASIC-2022 param ------------
 )
 
 SiPadFrontEndBlock1 = SiPadFrontEndBlock0.clone();
@@ -103,7 +158,7 @@ SiPadFrontEndBlock8.BlockIndex = cms.int32(8)
 
 #----------------------------------------------
 
-SiPadFrontEndBlock0.BinOffset = cms.double(-6.0)
+SiPadFrontEndBlock0.BinOffset = cms.double(0.0)
 SiPadFrontEndBlock1.BinOffset = cms.double(-4.0)
 SiPadFrontEndBlock2.BinOffset = cms.double(-2.0) 
 SiPadFrontEndBlock3.BinOffset = cms.double(0.0) 

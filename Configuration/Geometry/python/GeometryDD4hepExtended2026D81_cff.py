@@ -8,6 +8,7 @@ DDDetectorESProducer.confGeomXMLFiles = cms.FileInPath("Geometry/CMSCommonData/d
 
 from Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cff import *
 from SLHCUpgradeSimulations.Geometry.fakePhase2OuterTrackerConditions_cff import *
+from Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi import *
 from Geometry.EcalCommonData.ecalSimulationParameters_cff import *
 from Geometry.HcalCommonData.hcalDDDSimConstants_cff import *
 from Geometry.HGCalCommonData.hgcalParametersInitialization_cfi import *

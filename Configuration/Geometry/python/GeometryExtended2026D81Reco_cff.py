@@ -9,6 +9,9 @@ from Configuration.Geometry.GeometryExtended2026D81_cff import *
 from Geometry.CommonTopologies.globalTrackingGeometry_cfi import *
 from RecoTracker.GeometryESProducer.TrackerRecoGeometryESProducer_cfi import *
 from Geometry.TrackerGeometryBuilder.TrackerAdditionalParametersPerDet_cfi import *
+# common
+from Geometry.FbcmGeometryBuilder.FbcmGeometry_cfi import *
+
 from Geometry.TrackerGeometryBuilder.trackerParameters_cff import *
 from Geometry.TrackerNumberingBuilder.trackerTopology_cfi import *
 from Geometry.TrackerGeometryBuilder.idealForDigiTrackerGeometry_cff import *

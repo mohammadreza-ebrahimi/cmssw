@@ -33,9 +33,13 @@ namespace FbcmFE {
 
 	void FourierTransformableSignal::init(SignalType & RealSrcSig){
 		CplxSignal_.clear();
+        
 		for (auto val : RealSrcSig)
-			CplxSignal_.emplace_back(Complx(val));
-
+        { 
+            CplxSignal_.emplace_back(Complx(val));
+            //std::cout << (val) << "  ";  
+        }
+        //std::cout << "\n this is inti sygtpe finished\n" ;    
 		CplxSignal_.shrink_to_fit();
 
 
@@ -162,7 +166,13 @@ namespace FbcmFE {
 		ComplexSignalType TmpCplxSig(nfft);
 
 		for (unsigned int i=0; i< nfft ; i++)
-			TmpCplxSig[i]=CplxSignal_[i]*FilterTF[i];
+        {
+            TmpCplxSig[i]=CplxSignal_[i]*FilterTF[i];
+            //std::cout << "cplSigRe: " << CplxSignal_[i].Real() << " cplSigIm:" << CplxSignal_[i].Imag() << 
+              //          "flteRe:" << FilterTF[i].Real() << " flteIm:" << FilterTF[i].Imag() << i << "           " ;
+              
+              // std::cout << "Re: " << TmpCplxSig[i].Real() << " Im: " << TmpCplxSig[i].Imag() << "  ";
+        }
 
 		CplxSignal_.swap(TmpCplxSig);
 		// let's remain in fourier domain. 
