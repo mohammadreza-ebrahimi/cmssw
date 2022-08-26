@@ -35,9 +35,11 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
         boosterAmp_Hf_(freqVect_GHz),
         shaperFE_Hf_(freqVect_GHz),
         preAmpOutputSig_(nFFT_),
+        //preAmpLimittedOutputSig_(nFFT_),
         boosterOutputSig_(nFFT_),
         limiterFEv2OutputSig_(nFFT_),
         preAmp_(SiPadReceivedSig_,preAmpOutputSig_, preAmp_Hf_),
+        //limiterFEPreAmpv2_(preAmpOutputSig_,preAmpLimittedOutputSig_),
         boosterAmp_(preAmpOutputSig_,boosterOutputSig_, boosterAmp_Hf_),
         limiterFEv2_(boosterOutputSig_,limiterFEv2OutputSig_),
         shaperFEv2_(limiterFEv2OutputSig_, Shaper_OutputSig_, shaperFE_Hf_ ),
@@ -134,6 +136,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
             myfile << timeVectAligned_[i] << "\t"
                     << SiPadReceivedSig_[i] << "\t"
                     << preAmpOutputSig_[i] << "\t"
+                   // << preAmpLimittedOutputSig_[i] << "\t"
                     << boosterOutputSig_[i] << "\t"
                     << Shaper_OutputSig_[i] << "\t"
                     << signalLogicOutput_[i] << "\n"; 
@@ -222,7 +225,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
 	preAmp_Hf_.SetParameters( ActiveFrontEndParamPtr ) ;
 	boosterAmp_Hf_.SetParameters( ActiveFrontEndParamPtr ) ;
     shaperFE_Hf_.SetParameters( ActiveFrontEndParamPtr ) ;
-
+    //limiterFEPreAmpv2_.SetAbsMaxOut(ActiveFrontEndParamPtr->getParameter< double >("MaxFEOutputVoltage"));
 	limiterFEv2_.SetAbsMaxOut(ActiveFrontEndParamPtr->getParameter< double >("MaxFEOutputVoltage"));
 	
     asicComparator.SetComparatorThresholds(ASICParamPset.getParameter< double >("ComparatorThreshold"),
@@ -297,6 +300,9 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
                 prepareInputSignal(fftPrep.TimeDomainSignal()); // it preprares SiPadReceivedSig_
                 preAmp_Hf_.RunFilter(FilterType::preAmp_Filter);
                 preAmp_.CalculateOutputSignal();
+                
+                //limiterFEPreAmpv2_.RunLimiter();
+                
                 boosterAmp_Hf_.RunFilter(FilterType::booster_Filter);
                 boosterAmp_.CalculateOutputSignal();
                 limiterFEv2_.RunLimiter();
