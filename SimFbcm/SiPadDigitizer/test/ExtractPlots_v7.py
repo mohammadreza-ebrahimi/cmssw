@@ -16,6 +16,8 @@ import sys
 import argparse 
 import math
 import copy
+#import zipfile
+import tarfile
 
 # import matplotlib
 # import matplotlib.pyplot as plt
@@ -348,11 +350,11 @@ def main():
             
             rhoVect = nTotals_data["xAxis"]
             
-            ToaRho_data = GetData2D(puDict[pu][sg].hToaRho() , 1 , 7)
+            ToaRho_data = GetData2D(puDict[pu][sg].hToaRho() , 1 , 1)
             #ToaRho_data.pop("xAxis")
             ToaRhoList.append(ToaRho_data)
 
-            TotRho_data = GetData2D(puDict[pu][sg].hTotRho() , 1 , 7)
+            TotRho_data = GetData2D(puDict[pu][sg].hTotRho() , 1 , 1)
             #TotRho_data.pop("xAxis")
             TotRhoList.append(TotRho_data)
 
@@ -388,6 +390,10 @@ def main():
         
     AllResultsDict[opt.srcType] = {"SensorGroup":AllSensors}
     sio.savemat("ResultsMat_{0}.mat".format(opt.srcType), AllResultsDict)
+    # with tarfile.open("ResultsMat_{0}_compressed.tgz".format(opt.srcType), "w:gz") as tar:
+        # # tar.write("ResultsMat_{0}.mat".format(opt.srcType))
+        # tar.add("ResultsMat_{0}.mat".format(opt.srcType))
+        # tar.close()
     
     
     return 0

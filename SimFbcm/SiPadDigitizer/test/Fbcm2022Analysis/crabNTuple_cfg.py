@@ -2,38 +2,73 @@ from WMCore.Configuration import Configuration
 import os,sys
 config = Configuration()
 
+
 reqNamedFromArg = [ arg for arg in sys.argv if arg.startswith( 'General.requestName=' ) ][0].split( '=' )[-1]
 puFromArg = reqNamedFromArg[ reqNamedFromArg.find('PU')+2:]
-generationInfo = {'0p5':[0.5 , '/NuGun/hbakhshi-FBCMNuGunPU0p5-bee0f6cca29d2ad52c10723372b5e551/USER'] ,
-                  '1' : [1.0 , '/NuGun/hbakhshi-FBCMNuGunPU1-ecd2a523d2f78c811432ede5279aea28/USER'] ,
-                  '1p5' : [1.5 , '/NuGun/hbakhshi-FBCMNuGunPU1p5-5574e5de471c21e9f6447b511c3f5447/USER' ] ,
-                  '10' : [10 , '/NuGun/hbakhshi-FBCMNuGunPU10-26b3d8a1ea4fdb6b830c981c46852ea7/USER' ] ,
-                  '50' : [50 , '/NuGun/hbakhshi-FBCMNuGunPU50-1b900cf6c3e80f0c6610b3f5adb26382/USER' ] , 
-                  '100' : [100 , '/NuGun/hbakhshi-FBCMNuGunPU100-f65b27cb4f63546e3d4064b48622f535/USER'],
-                  '140' : [140 , '/NuGun/hbakhshi-FBCMNuGunPU140-d33d56216e56dc2937a9e0b9b09425e6/USER' ] ,
-                  '200' : [200 , '/NuGun/hbakhshi-FBCMNuGunPU200-79ef82d501ae7989114bc727a8340bda/USER' ] }
+
+scanName = [ arg for arg in sys.argv if arg.startswith( 'General.InstanceName=' ) ][0].split( '=' )[-1]
+
+# since in one of the DIGI outputs, they have not been pulished as a dadatbase, I should do with some modification.. 
+generationInfo = {'0p5':[0.5 , 'address to the DIGI directory'] ,
+                  '1' : [1.0 , 'address to the DIGI directory'] ,
+                  '1p5' : [1.5 , 'address to the DIGI directory'] ,
+                  '10' : [10 , 'address to the DIGI directory' ] ,
+                  '50' : [50 , 'address to the DIGI directory' ] , 
+                  '100' : [100 , 'address to the DIGI directory'],
+                  '140' : [140 , 'address to the DIGI directory' ] ,
+                  '200' : [200 , '/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/Aug2022Workshop/NuGun/FbcmMultiInstanceNuGunPU200/220824_150438'] }
+
+def getInputFileList(baseDirectory, beginsWithTheseChars ): # without "/" at the end
+    # baseDir = "/".join(baseDirectory.split('/')[:-1]) + "/"
+    baseDir = baseDirectory + "/"
+    storeDir = "/" + "/".join(baseDir.split('/')[3:])
+    subDirs = os.listdir(baseDir)
+    minBiasFiles = []
+    for folder in subDirs:
+        minBiasDirectory = baseDir + folder
+        filesinDirectory = [storeDir + folder + "/" + f for f in os.listdir(minBiasDirectory) if f[:len(beginsWithTheseChars)] == beginsWithTheseChars]
+        minBiasFiles = minBiasFiles + filesinDirectory
+    return minBiasFiles
+
+
+# baseDirectory ='/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/Aug2022Workshop/NuGun/FbcmMultiInstanceNuGunPU200/220824_150438'
+baseDirectory = generationInfo[puFromArg][1]
+inputDigiFiles = getInputFileList(baseDirectory, "GEN_SIM_DIGI" )
+# inputDigiFiles = [inputDigiFiles[0]]
+# print(inputDigiFiles)
+# exit(0)
+
+
+
 config.section_('General')
 config.General.requestName = ''
-config.General.workArea = 'crab_projects'
+config.General.workArea = "crabNtuples_{0}".format(scanName)
 config.General.transferOutputs = True
 
 config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
-#config.JobType.psetName = 'Bcm1F_MFMR_Ntuplizer_cfg.py'
-config.JobType.psetName = 'Bcm1F_Run3_Ntuplizer_cfg.py'
+config.JobType.psetName = 'Fbcm2022_Ntuplizer_cfg.py'
 config.JobType.allowUndistributedCMSSW = True
 config.JobType.sendPythonFolder	 = True
 config.JobType.numCores = 1
-config.JobType.pyCfgParams = ["PU={0}".format(puFromArg)]
+config.JobType.maxMemoryMB = 1000
+config.JobType.maxJobRuntimeMin = 100
+config.JobType.pyCfgParams = ["PU={0}".format(puFromArg), "InstanceName={0}".format(scanName)]
 
 config.section_('Data')
-config.Data.inputDataset = generationInfo[puFromArg][1]
+# config.Data.inputDataset = generationInfo[puFromArg][1]
+config.Data.userInputFiles = inputDigiFiles
 config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 10
+# config.Data.splitting = 'Automatic'
+config.Data.unitsPerJob = 5
+config.Data.outputPrimaryDataset = "nTuple{}".format(scanName)
+config.Data.outputDatasetTag = 'FbcmNtuplePU{0}'.format(puFromArg)
+
 config.Data.publication = False
-config.Data.outLFNDirBase = '/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/'
-config.Data.inputDBS = 'phys03'
+config.Data.outLFNDirBase = '/store/user/msedghi/Fbcm/Aug2022Workshop/nTuples/'
+# config.Data.inputDBS = 'phys03'
 
 config.section_("Site")
-config.Site.storageSite = "T2_CH_CERN"
+# config.Site.storageSite = "T2_CH_CERN"
+config.Site.storageSite = "T3_CH_CERNBOX"
 config.Site.whitelist = ["T2_CH_CERN"]
