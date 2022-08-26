@@ -79,9 +79,11 @@ namespace FbcmFE {
 		Filter boosterAmp_Hf_; 
 		Filter shaperFE_Hf_; 
         SignalType preAmpOutputSig_;
+        //SignalType preAmpLimittedOutputSig_;
 		SignalType boosterOutputSig_;
 		SignalType limiterFEv2OutputSig_;
         LinearCircuitFreqDomain preAmp_;
+        //NonlinearLimiter limiterFEPreAmpv2_;
 		LinearCircuitFreqDomain boosterAmp_;
         NonlinearLimiter limiterFEv2_;
 		LinearCircuitFreqDomain shaperFEv2_;

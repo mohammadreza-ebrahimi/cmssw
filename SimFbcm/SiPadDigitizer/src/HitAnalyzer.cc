@@ -38,13 +38,20 @@ namespace FbcmFE {
 		
         int lowerTimeIndexCut=BX_CenterIndex + (int)(ToALowerCut_*FS_) ; // BX_CenterIndex-BX_IndShift/2;
         int UpperTimeIndexCut=BX_CenterIndex + (int)(ToAUpperCut_*FS_) ; // BX_CenterIndex+BX_IndShift/2;
-
+        
+        if (lowerTimeIndexCut<=0)
+             lowerTimeIndexCut=1;
+            
+         if (UpperTimeIndexCut>=Len)
+             UpperTimeIndexCut=Len-1;
+        
         bool HitDetected=false;
         unsigned int start_ = 0, end_;
         int BckwardCNT,i;
         float ToA,ToT;
         ToaTotPair TotToa;
         ToAStatus ToAState=ToAStatus::UnKnown;
+        float ToTCorrectionCount = 0;
 
         float binshift=BinShift_-Eps;
         int16_t SubBxBinNo;
@@ -53,10 +60,22 @@ namespace FbcmFE {
         { 
 
             if ( i==lowerTimeIndexCut && CFD_LogicalSignal_[lowerTimeIndexCut]) {
-                for (BckwardCNT=lowerTimeIndexCut-1; (CFD_LogicalSignal_ [BckwardCNT]) && BckwardCNT >= 0  ; BckwardCNT--) ;
-                BckwardCNT++;
+                for (BckwardCNT=lowerTimeIndexCut+1; (CFD_LogicalSignal_ [BckwardCNT]) && BckwardCNT > 0  ; BckwardCNT--) ;
 
+                // if (BckwardCNT==0 && CFD_LogicalSignal_ [Len-1])
+                // {
+                    // for (ToTCorrectionCount=0 ; !CFD_LogicalSignal_[ToTCorrectionCount]; ToTCorrectionCount++ );
+                    // for (jj=Len-1 ; (CFD_LogicalSignal_ [jj]) && jj > 0 ; jj--);
+                    // std::cout <<"first and end continued., New ToAInd is:" << jj << "\n"; 
+                    // start_= jj;
+                    
+                // } else
+                // {
+                    // start_=BckwardCNT;
+                // }
+                
                 start_=BckwardCNT;
+                
                 HitDetected=true;
             }
             else if (CFD_LogicalSignal_[i] != LastState)  // rising-edge or falling-edge occurred
@@ -112,7 +131,12 @@ namespace FbcmFE {
                     HitDetected = false;
                     ToA=timeVectAligned_[start_]-(BXC_SlotNo_*BX_Duration_);
                     end_=i-1;
-                    ToT=timeVectAligned_[end_]-timeVectAligned_[start_];
+                    
+                    // due to cyclic FFT!, the signal will return back and starts from begining. 
+                    for (ToTCorrectionCount=0 ; CFD_LogicalSignal_ [ToTCorrectionCount] ;  ToTCorrectionCount++);
+                    ToTCorrectionCount--;
+                    
+                    ToT=timeVectAligned_[end_]-timeVectAligned_[start_] +  ToTCorrectionCount/FS_ ;
                     //ToT=1000.0;
 
 
@@ -131,7 +155,9 @@ namespace FbcmFE {
                         if (Signal2PeakAmplSampler_[k] > pAmpl) 
                             pAmpl=Signal2PeakAmplSampler_[k]; 
 
-                    TotToa.SetPairInfo(ToA,ToT,false, ToAState , SubBxBinNo, pAmpl );
+                    //TotToa.SetPairInfo(ToA,ToT,false, ToAState , SubBxBinNo, pAmpl );
+                    
+                    TotToa.SetPairInfo(ToA,ToT,true, ToAState , SubBxBinNo, pAmpl );
                     TotToaVect.emplace_back(TotToa);
         }
             NumOfRecognizedHits=CheckHitInBx();
