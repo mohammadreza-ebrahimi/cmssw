@@ -5,23 +5,42 @@
 # with command line options: --evt_type SingleNuE10_cfi -s GEN,SIM,DIGI --mc --fileout file:GEN_SIM_DIGI.root --conditions auto:phase2_realistic --pileup_input file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root --pileup AVE_200_BX_25ns,{'B':(-3,3),'N':1.5} --era Phase2,fbcmDigi,OnlyfbcmDigi --datatier GEN-SIM-DIGI-RAW --geometry Extended2026D81 --eventcontent FEVTDEBUG --python_filename GEN_SIM_DIGI_cfg.py --customise SimFbcm/SiPadDigitizer/aging.no_aging,Configuration/DataProcessing/Utils.addMonitoring --nThreads 2 -n 2 --no_exe
 import FWCore.ParameterSet.Config as cms
 
-# import os
-# def getInputFileList(baseDirectory, beginsWithTheseChars ): # without "/" at the end
-    # # baseDirectory ='/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/Aug2022Workshop/MinBias/FBCMV2MinBias/220820_202455'
-    # # baseDir = "/".join(baseDirectory.split('/')[:-1]) + "/"
-    # baseDir = baseDirectory + "/"
-    # storeDir = "/" + "/".join(baseDir.split('/')[3:])
-    # subDirs = os.listdir(baseDir)
-    # minBiasFiles = []
-    # for folder in subDirs:
-        # minBiasDirectory = baseDir + folder
-        # filesinDirectory = [storeDir + folder + "/" + f for f in os.listdir(minBiasDirectory) if f[:len(beginsWithTheseChars)] == beginsWithTheseChars]
-        # minBiasFiles = minBiasFiles + filesinDirectory
-    # return minBiasFiles
+import os
+def getInputFileList(baseDirectory, beginsWithTheseChars ): # without "/" at the end
+    # baseDirectory ='/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/Aug2022Workshop/MinBias/FBCMV2MinBias/220820_202455'
+    # baseDir = "/".join(baseDirectory.split('/')[:-1]) + "/"
+    baseDir = baseDirectory + "/"
+    storeDir = "/" + "/".join(baseDir.split('/')[3:])
+    subDirs = os.listdir(baseDir)
+    minBiasFiles = []
+    for folder in subDirs:
+        minBiasDirectory = baseDir + folder
+        filesinDirectory = [storeDir + folder + "/" + f for f in os.listdir(minBiasDirectory) if f[:len(beginsWithTheseChars)] == beginsWithTheseChars]
+        minBiasFiles = minBiasFiles + filesinDirectory
+    return minBiasFiles
 
 
-# baseDirectory ='/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/MinBias/FBCMMinBias/210127_070946'
-# minBiasFiles = getInputFileList(baseDirectory, "MinBias" )
+baseDirectory ='/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/Aug2022Workshop/MinBias/FBCMV2MinBias/220820_202455'
+minBiasFiles = getInputFileList(baseDirectory, "MinBias" )
+# minBiasFiles = [minBiasFiles[0]]
+# print(minBiasFiles)
+# exit(0)
+
+
+import FWCore.ParameterSet.VarParsing as VarParsing
+
+options = VarParsing.VarParsing ('analysis')
+options.register ('pu',
+                  1, # default value
+                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.VarParsing.varType.float,          # string, int, or float
+                  "number of pile up events")
+options.register ('aging',
+                  0, # default value
+                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.VarParsing.varType.float,          # string, int, or float
+                  "number of pile up events")
+options.parseArguments()
 
 from Configuration.Eras.Era_Phase2_cff import Phase2
 from Configuration.Eras.Modifier_fbcmDigi_cff import fbcmDigi
@@ -105,12 +124,17 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 
 # Additional output definition
 
+
+
 # Other statements
-process.mix.input.nbPileupEvents.averageNumber = cms.double(1.500000)
+process.mix.input.nbPileupEvents.averageNumber = cms.double(options.pu)
 process.mix.bunchspace = cms.int32(25)
 process.mix.minBunch = cms.int32(-3)
 process.mix.maxBunch = cms.int32(3)
-process.mix.input.fileNames = cms.untracked.vstring(['file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root'])
+
+
+
+process.mix.input.fileNames = cms.untracked.vstring(minBiasFiles)
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
@@ -146,7 +170,7 @@ from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
 #Setup FWK for multithreaded
-process.options.numberOfThreads=cms.untracked.uint32(2)
+process.options.numberOfThreads=cms.untracked.uint32(4)
 process.options.numberOfStreams=cms.untracked.uint32(0)
 process.options.numberOfConcurrentLuminosityBlocks=cms.untracked.uint32(1)
 # filter all path with the production filter sequence
@@ -156,10 +180,66 @@ for path in process.paths:
 # customisation of the process.
 
 # Automatic addition of the customisation function from SimFbcm.SiPadDigitizer.aging
-from SimFbcm.SiPadDigitizer.aging import no_aging 
+from SimFbcm.SiPadDigitizer.aging import no_aging , _1000invfb , _3000invfb , _4000invfb
+
+from SimFbcm.SiPadDigitizer.aging import no_aging , _1000invfb , _3000invfb , _4000invfb
+if options.aging == 0:
+        process = no_aging(process)
+elif options.aging == 1000:
+        process = customise_aging_1000( process )
+        process = _1000invfb( process )
+elif options.aging == 3000:
+        process = customise_aging_3000( process )
+        process = _3000invfb(process)
+elif options.aging == 4000 :
+        process = customise_aging_4500_ultimate( process )
+        process = _4000invfb(process)
+
+SiPad1p=process.mix.digitizers.SiPad.clone()
+SiPad2p=SiPad1p.clone()
+SiPad3p=SiPad1p.clone()
+SiPad4p=SiPad1p.clone()
+SiPad5p=SiPad1p.clone()
+
+SiPad1p.InstanceName = cms.string('SiPadWithTimewalk')
+SiPad2p.InstanceName = cms.string('SiPadNoTimewalk')
+SiPad3p.InstanceName = cms.string('SiPad25mVtsh')
+SiPad4p.InstanceName = cms.string('SiPad100mVtsh')
+SiPad5p.InstanceName = cms.string('SiPadRfa38k154')
+
+
+SiPad1p.SiPadFrontEndParam[0].ApplyTimewalk =cms.bool(True)
+SiPad2p.SiPadFrontEndParam[0].ApplyTimewalk =cms.bool(False)
+SiPad3p.SiPadFrontEndParam[0].FE2022ASIC.ComparatorThreshold = cms.double(25.0)
+SiPad4p.SiPadFrontEndParam[0].FE2022ASIC.ComparatorThreshold = cms.double(100.0)
+SiPad5p.SiPadFrontEndParam[0].FE2022ASIC.R12 = cms.double(38.154)
+
+
+process.theDigitizers = cms.PSet(
+    SiPad1=SiPad1p,
+    SiPad2=SiPad2p,
+    SiPad3=SiPad3p,
+    SiPad4=SiPad4p,
+    SiPad5=SiPad5p,
+)
+process.theDigitizersValid = cms.PSet(
+    SiPad1=SiPad1p,
+    SiPad2=SiPad2p,
+    SiPad3=SiPad3p,
+    SiPad4=SiPad4p,
+    SiPad5=SiPad5p,
+)
+
+process.mix.digitizers = cms.PSet(
+    SiPad1=SiPad1p,
+    SiPad2=SiPad2p,
+    SiPad3=SiPad3p,
+    SiPad4=SiPad4p,
+    SiPad5=SiPad5p,
+)
 
 #call to customisation function no_aging imported from SimFbcm.SiPadDigitizer.aging
-process = no_aging(process)
+#process = no_aging(process)
 
 # Automatic addition of the customisation function from Configuration.DataProcessing.Utils
 from Configuration.DataProcessing.Utils import addMonitoring 
