@@ -32,10 +32,10 @@
 
 using namespace std;
 
-class FbcmNtuplizer_v3 : public edm::EDAnalyzer {
+class FbcmNtuplizer_v4 : public edm::EDAnalyzer {
 public:
-  explicit FbcmNtuplizer_v3(const edm::ParameterSet&);
-  ~FbcmNtuplizer_v3();
+  explicit FbcmNtuplizer_v4(const edm::ParameterSet&);
+  ~FbcmNtuplizer_v4();
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -52,19 +52,23 @@ private:
 
 
   // ----------member data ---------------------------
-//  edm::InputTag tag(hitsProducer_, SubdetName_);
-  edm::EDGetTokenT< edm::DetSetVector<SiPadDigiData> > TokenTag_;
+  
+  std::vector< edm::EDGetTokenT< edm::DetSetVector<SiPadDigiData> > > TokenTags_;
   edm::ESHandle<FbcmGeometry> theFbcmGeom;
   //const std::vector<edm::ParameterSet> sectors_;
   
   
+  //std::map<std::string, TFileDirectory> tagDirectory;
+  std::vector<TFileDirectory> tagDirectories;
   
-  TH1* hNEvents;
-  TH1* hNSensorGroups;
+  std::vector< TH1* > hNEvents;
+  std::vector< TH1* > hNSensorGroups;
   
-  TTree* theTree;
-  TTree* FixedValuesTree;
-    
+  std::vector< TTree* > theTree;
+  std::vector< TTree* > FixedValuesTree;
+  
+  std::vector<std::string> instanceNames;
+  
   float SensorArea;
   float SensorRho;
   
@@ -116,46 +120,82 @@ private:
 //
 // constructors and destructor
 //
-FbcmNtuplizer_v3::FbcmNtuplizer_v3(const edm::ParameterSet& iConfig) :
-  TokenTag_(consumes< edm::DetSetVector<SiPadDigiData> >(iConfig.getParameter<edm::InputTag>("FbcmDigiTag"))),
+FbcmNtuplizer_v4::FbcmNtuplizer_v4(const edm::ParameterSet& iConfig) :
+  //TokenTag_(consumes< edm::DetSetVector<SiPadDigiData> >(iConfig.getParameter<edm::InputTag>("FbcmDigiTag"))),
+  instanceNames(iConfig.getParameter< std::vector<std::string> >("InstanceNameTags")),
   numberOfSensorGroups(0)
 {
+    //edm::InputTag tag(hitsProducer_, SubdetName_);
   numberOfSensorGroups=0;
-  edm::Service<TFileService> fs;
-  TFileDirectory subDir = fs->mkdir( "mySubDirectory" );
-  theTree = subDir.make<TTree>( iConfig.getParameter< string >("TreeName").c_str() , "all hits" );
-  FixedValuesTree = subDir.make<TTree>( "GeometryInfo" , "FixedValues" );
-  hNEvents = subDir.make<TH1I>("hNEvents" , "" , 1 , 0 , 1 );
-  hNSensorGroups = subDir.make<TH1I>("hNSensorGroups", "", 1, 0, 1);
-
   Int_t bsize = 32000; //default
+  
+  
+  edm::Service<TFileService> fs;
+  //TFileDirectory subDir;  
+  tagDirectories.clear();
+  theTree.clear();
+  FixedValuesTree.clear();
+  hNEvents.clear();
+  hNSensorGroups.clear();
+  
+  for(auto it = std::begin(instanceNames); it != std::end(instanceNames); ++it) {
+    edm::InputTag tag("simFbcmDigis", it->c_str() );
+    TokenTags_.emplace_back( consumes< edm::DetSetVector<SiPadDigiData> >( tag )  );   
+      
+    //tagDirectory[*it] = fs->mkdir( it->c_str() );
+    //subDir = fs->mkdir( it->c_str() ) ;
+    tagDirectories.emplace_back( fs->mkdir( it->c_str() ) );
+    theTree.emplace_back( tagDirectories.back().make<TTree>( iConfig.getParameter< string >("TreeName").c_str() , "all hits" ));
+    FixedValuesTree.emplace_back( tagDirectories.back().make<TTree>( "GeometryInfo" , "FixedValues" )   );
+    hNEvents.emplace_back( tagDirectories.back().make<TH1I>("hNEvents" , "" , 1 , 0 , 1 )  );
+    hNSensorGroups.emplace_back( tagDirectories.back().make<TH1I>("hNSensorGroups", "", 1, 0, 1)  );
+    
+    theTree.back()->Branch("SensorRho" , &SensorRho , "SensorRho/F", bsize );
+    theTree.back()->Branch("SensorArea" , &SensorArea , "SensorArea/F" , bsize  );
+  theTree.back()->Branch("nSimParticles" , &nSimParticles);
+  theTree.back()->Branch("SensorGroupIndex" , &SensorGroupIndex); 
+  theTree.back()->Branch("SimPdgId" , SimPdgIds , "SimPdgId[nSimParticles]/I" , bsize );
+  theTree.back()->Branch("SimPt" , SimPts , "SimPt[nSimParticles]/F" , bsize );
+  theTree.back()->Branch("SimCharge" , SimCharges , "SimCharge[nSimParticles]/F", bsize );
+  theTree.back()->Branch("SimTof" , SimTofs , "SimTof[nSimParticles]/F", bsize ); 
+  theTree.back()->Branch("SimTof_perBx" , SimTof_perBx , "SimTof_perBx[nSimParticles]/F", bsize ); 
+  theTree.back()->Branch("BxSlotCnt" , &BxSlotCnt);
+  theTree.back()->Branch("DigiHitStatus" , DigiHitStatus , "DigiHitStatus[BxSlotCnt]/I", bsize );
+  theTree.back()->Branch("nDigiHits" , nDigiHits , "nDigiHits[BxSlotCnt]/I" , bsize ); 
+  theTree.back()->Branch("nValidDigiToAs" , &nValidDigiToAs);
+  theTree.back()->Branch("nValidDigiToTs" , &nValidDigiToTs);
+  theTree.back()->Branch("DigiToA" , DigiToAs , "DigiToAs[nValidDigiToAs]/F" , bsize );
+  theTree.back()->Branch("DigiToT" , DigiToTs , "DigiToTs[nValidDigiToTs]/F", bsize );
+  theTree.back()->Branch("PeakAmplitude" , PeakAmpl , "PeakAmpl[nValidDigiToAs]/F" , bsize );
+  theTree.back()->Branch("nTotalRhuDigi" , &nTotalRhuDigi);
+  theTree.back()->Branch("nInterstedRhuBins" , &nInterstedRhuBins);
+  theTree.back()->Branch("DigiRHU" , DigiRHUs , "DigiRHUs[nTotalRhuDigi]/I", bsize );
+    
+    
+  }
 
-  //theTree->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize );
-  //theTree->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  );
+   /*  for (const auto& v: tagDirectory) {
+
+      cout << v.first << "\n" ;
   
-  theTree->Branch("SensorRho" , &SensorRho , "SensorRho/F", bsize );
-  theTree->Branch("SensorArea" , &SensorArea , "SensorArea/F" , bsize  );
-  theTree->Branch("nSimParticles" , &nSimParticles);
-  theTree->Branch("SensorGroupIndex" , &SensorGroupIndex); 
-  theTree->Branch("SimPdgId" , SimPdgIds , "SimPdgId[nSimParticles]/I" , bsize );
-  theTree->Branch("SimPt" , SimPts , "SimPt[nSimParticles]/F" , bsize );
-  theTree->Branch("SimCharge" , SimCharges , "SimCharge[nSimParticles]/F", bsize );
-  theTree->Branch("SimTof" , SimTofs , "SimTof[nSimParticles]/F", bsize ); 
-  theTree->Branch("SimTof_perBx" , SimTof_perBx , "SimTof_perBx[nSimParticles]/F", bsize ); 
-  theTree->Branch("BxSlotCnt" , &BxSlotCnt);
-  theTree->Branch("DigiHitStatus" , DigiHitStatus , "DigiHitStatus[BxSlotCnt]/I", bsize );
-  theTree->Branch("nDigiHits" , nDigiHits , "nDigiHits[BxSlotCnt]/I" , bsize ); 
-  theTree->Branch("nValidDigiToAs" , &nValidDigiToAs);
-  theTree->Branch("nValidDigiToTs" , &nValidDigiToTs);
-  theTree->Branch("DigiToA" , DigiToAs , "DigiToAs[nValidDigiToAs]/F" , bsize );
-  theTree->Branch("DigiToT" , DigiToTs , "DigiToTs[nValidDigiToTs]/F", bsize );
-  theTree->Branch("PeakAmplitude" , PeakAmpl , "PeakAmpl[nValidDigiToAs]/F" , bsize );
+    } */
   
-  theTree->Branch("nTotalRhuDigi" , &nTotalRhuDigi);
-  theTree->Branch("nInterstedRhuBins" , &nInterstedRhuBins);
-  theTree->Branch("DigiRHU" , DigiRHUs , "DigiRHUs[nTotalRhuDigi]/I", bsize );
+  
+  
+  //theTree = tagDirectory[instanceNames[0]].make<TTree>( iConfig.getParameter< string >("TreeName").c_str() , "all hits" );
+  //FixedValuesTree = tagDirectory[instanceNames[0]].make<TTree>( "GeometryInfo" , "FixedValues" );
+  //hNEvents = tagDirectory[instanceNames[0]].make<TH1I>("hNEvents" , "" , 1 , 0 , 1 );
+  //hNSensorGroups = tagDirectory[instanceNames[0]].make<TH1I>("hNSensorGroups", "", 1, 0, 1);
+
+  
+
+  //theTree->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize ); // just to remmember: /f[8,22] causes misreading
+  //theTree->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  ); // just to remmember: /f[8,22] causes misreading
+  
+  
   
   tmpVect = iConfig.getParameter< std::vector<int> >("RHU_InterestedHitBins");
+  
   rhuInterestedHitBins_.clear();
   for (int i = tmpVect.front(); i <= tmpVect.back(); i++) 
       rhuInterestedHitBins_.emplace_back(i);
@@ -168,7 +208,7 @@ FbcmNtuplizer_v3::FbcmNtuplizer_v3(const edm::ParameterSet& iConfig) :
 }
 
 
-FbcmNtuplizer_v3::~FbcmNtuplizer_v3()
+FbcmNtuplizer_v4::~FbcmNtuplizer_v4()
 {
  
   // do anything here that needs to be done at desctruction time
@@ -183,17 +223,25 @@ FbcmNtuplizer_v3::~FbcmNtuplizer_v3()
 
 // ------------ method called for each event  ------------
 void
-FbcmNtuplizer_v3::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+FbcmNtuplizer_v4::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
   using namespace edm;
   using namespace std;
 
-  hNEvents->Fill( 0.5 );
+  for(long unsigned int i=0; i < tagDirectories.size(); i++){
+   
+    //   edm::InputTag tag("simFbcmDigis", instanceNames[i]);
+    //TokenTag_ = consumes< edm::DetSetVector<SiPadDigiData> > (tag); // does not works here! consumes should be called in the constroctor
+   
+   //std::cout << "here is reach out. \n"; 
+   
+  hNEvents[i]->Fill( 0.5 );
 
   edm::Handle< edm::DetSetVector<SiPadDigiData> > handle;
-  iEvent.getByToken(TokenTag_,handle);
-
+  
+  iEvent.getByToken(TokenTags_[i] ,handle);
+  // iEvent.getByLabel(tag, handle);
   
   //int SiDieId;
   for (edm::DetSetVector<SiPadDigiData>::const_iterator itDetSet = handle->begin() ;  itDetSet < handle->end() ; ++itDetSet) {
@@ -257,30 +305,32 @@ FbcmNtuplizer_v3::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       }
  
 
-      theTree->Fill();
+      theTree[i]->Fill();
 
     }
-
   }
+  
+  
+     }
   
 }
 
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-FbcmNtuplizer_v3::beginJob()
+FbcmNtuplizer_v4::beginJob()
 {
   
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void FbcmNtuplizer_v3::endJob() 
+void FbcmNtuplizer_v4::endJob() 
 {
 }
 
 // ------------ method called when starting to processes a run  ------------
 
-void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) {
+void FbcmNtuplizer_v4::beginRun(edm::Run const&, edm::EventSetup const& iSetup) {
   
   
   //std::cout << rhuInterestedHitBins_.front() << ", " << rhuInterestedHitBins_.back() << "\n" ; 
@@ -298,15 +348,18 @@ void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) 
   nbrOfDiesPerRing = AllStatitons[0]->NumOfDiesPerRing(); 
   
     
-  
+  for(long unsigned int i=0; i < tagDirectories.size(); i++){
+      
+      //std::cout << instanceNames[i] << "\n";
+      
   int SiDieId=0;
   int SiDieGroupIndex=0;
   float padX, padY , padRho;
 
-  FixedValuesTree->Branch("SiDieGroupIndex" , &SiDieGroupIndex );
-  FixedValuesTree->Branch("SensorX" , &padX );
-  FixedValuesTree->Branch("SensorY" , &padY );
-  FixedValuesTree->Branch("SensorRho" , &padRho );
+  FixedValuesTree[i]->Branch("SiDieGroupIndex" , &SiDieGroupIndex );
+  FixedValuesTree[i]->Branch("SensorX" , &padX );
+  FixedValuesTree[i]->Branch("SensorY" , &padY );
+  FixedValuesTree[i]->Branch("SensorRho" , &padRho );
 
   for(const auto& siPad : allSiPadGeoms)
     {
@@ -322,8 +375,10 @@ void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) 
 	  
         //std::cout << SiDieId <<", " << SiDieGroupIndex <<"\n"; 
       
-      FixedValuesTree->Fill();
+      FixedValuesTree[i]->Fill();
     }
+    
+  }
 }
 
 
@@ -331,20 +386,21 @@ void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) 
 // ------------ method called when ending the processing of a run  ------------
 
   void 
-  FbcmNtuplizer_v3::endRun(edm::Run const&, edm::EventSetup const&)
+  FbcmNtuplizer_v4::endRun(edm::Run const&, edm::EventSetup const&)
   {
       numberOfSensorGroups++; // becuse indecies begin from zero
       
       //hNSensorGroups->Fill(0.5, nbrOfDiesPerRing); 
-      hNSensorGroups->Fill(0.5, numberOfSensorGroups); 
-      
+      for(long unsigned int i=0; i < tagDirectories.size(); i++){
+      hNSensorGroups[i]->Fill(0.5, numberOfSensorGroups); 
+      }
   }
 
 
 // ------------ method called when starting to processes a luminosity block  ------------
 /*
   void 
-  FbcmNtuplizer_v3::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+  FbcmNtuplizer_v4::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
   {
   }
 */
@@ -352,14 +408,14 @@ void FbcmNtuplizer_v3::beginRun(edm::Run const&, edm::EventSetup const& iSetup) 
 // ------------ method called when ending the processing of a luminosity block  ------------
 /*
   void 
-  FbcmNtuplizer_v3::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+  FbcmNtuplizer_v4::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
   {
   }
 */
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-FbcmNtuplizer_v3::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+FbcmNtuplizer_v4::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   //  edm::ParameterSetDescription desc;
@@ -368,4 +424,4 @@ FbcmNtuplizer_v3::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(FbcmNtuplizer_v3);
+DEFINE_FWK_MODULE(FbcmNtuplizer_v4);

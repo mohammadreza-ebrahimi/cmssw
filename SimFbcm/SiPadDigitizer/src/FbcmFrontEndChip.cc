@@ -38,6 +38,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
         //preAmpLimittedOutputSig_(nFFT_),
         boosterOutputSig_(nFFT_),
         limiterFEv2OutputSig_(nFFT_),
+        sigAnalogSampler_(nFFT_),
         preAmp_(SiPadReceivedSig_,preAmpOutputSig_, preAmp_Hf_),
         //limiterFEPreAmpv2_(preAmpOutputSig_,preAmpLimittedOutputSig_),
         boosterAmp_(preAmpOutputSig_,boosterOutputSig_, boosterAmp_Hf_),
@@ -62,7 +63,7 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
 		ZC_Comp(DiscrimShaperOutSig_,CFD_ZeroCCompOutSig_),
 		Arming_Comp(Shaper_OutputSig_,CFD_ArmingCompOutSig_),
 		OutputLogicCirc(CFD_ZeroCCompOutSig_,CFD_ArmingCompOutSig_,signalLogicOutput_),
-		Hit_Analyzer(FFtPrep, signalLogicOutput_, Shaper_OutputSig_)
+		Hit_Analyzer(FFtPrep, signalLogicOutput_, sigAnalogSampler_)
     {
 
 } ;
@@ -273,6 +274,9 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
             Cfd_.RunCFD();
             CFD_ShaperHf_.RunFilter(FilterType::CDFShaper);
             CFD_Shaper_.CalculateOutputSignal();
+            
+            sigAnalogSampler_ = Shaper_OutputSig_; 
+            
             ZC_Comp.RunComparator();
             Arming_Comp.RunComparator();
             OutputLogicCirc.RunLogic();
@@ -289,6 +293,9 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
                 Limiter_.RunLimiter();
                 Shaper_Hf_.RunFilter(FilterType::Shaper_Filter);
                 Shaper_.CalculateOutputSignal();
+                
+                sigAnalogSampler_ = Shaper_OutputSig_; 
+                
                 vmeComp.RunComparator();
                 VMELogicCirc.RunLogic();
             break;
@@ -309,6 +316,8 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
                 shaperFE_Hf_.RunFilter(FilterType::shaperFEv2_Filter);
                 shaperFEv2_.CalculateOutputSignal();
                 asicComparator.RunComparator();
+                prepareAnalogSampler();
+                
                 
             break;
             
@@ -326,6 +335,37 @@ FbcmFrontEndChip::FbcmFrontEndChip(FftPreparation & FFtPrep):
 	void FbcmFrontEndChip::GetHitAnalysisInfo(int BXC_SlotNo, HitAnalysisInfo & HitTotToaInfo){
 	    Hit_Analyzer.RunHitAnalyzer(BXC_SlotNo);
 	    HitTotToaInfo = Hit_Analyzer.GetHitAnalysisInfo();
+    }
+    
+    void FbcmFrontEndChip::prepareAnalogSampler(){
+        int signalCode_ = ActiveFrontEndParamPtr->getParameter< int >("signalCodeForPeakAmpl");
+        //std::cout << signalCode_ << "\n";
+        switch(signalCode_){ 
+            case 0:                 
+                sigAnalogSampler_ = SiPadReceivedSig_;
+            break;
+            
+            case 1:                 
+                sigAnalogSampler_ = (-1.0) * preAmpOutputSig_;  // to make it positive
+            break;
+            
+            case 2:                 
+                sigAnalogSampler_ = boosterOutputSig_;
+            break;
+            
+            case 3:                 
+                sigAnalogSampler_ = limiterFEv2OutputSig_;
+            break;
+            
+            case 4:                 
+                sigAnalogSampler_ = Shaper_OutputSig_; 
+            break;  
+            
+           default:
+              throw cms::Exception("Wrong signal sample name") << "pls use ";
+              break; 
+        }
+        
     }
 
 

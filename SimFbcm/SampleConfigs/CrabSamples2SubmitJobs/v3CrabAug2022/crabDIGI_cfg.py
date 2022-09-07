@@ -11,37 +11,37 @@ generationInfo = {'0p5':[0.5 , 2 , 500] ,
                   '50' : [50 , 1 , 1 ] , 
                   '100' : [100 , 1 , 1],
                   '140' : [140 , 1 , 1 ] ,
-                  '200' : [200 , 100 , 25 ] }
+                  '200' : [200 , 4 , 5 ] }
 config.section_('General')
 config.General.requestName = ''
-config.General.workArea = 'crab_multiInstance'
+config.General.workArea = 'crab_short'
 config.General.transferOutputs = True
 
 config.section_('JobType')
 config.JobType.pluginName = 'PrivateMC'
-config.JobType.psetName = 'GEN_SIM_DIGI_M_cfg.py'
+config.JobType.psetName = 'GEN_SIM_DIGI_M2_cfg.py'
 config.JobType.allowUndistributedCMSSW = True
 # config.JobType.maxJobRuntimeMin = 3000
 config.JobType.sendPythonFolder	 = True
-config.JobType.numCores = 4
+config.JobType.numCores = 2
 config.JobType.maxMemoryMB = 4000
 config.JobType.maxJobRuntimeMin = 1000
 config.JobType.pyCfgParams = ["pu={0}".format(generationInfo[puFromArg][0])  , "aging=0"]
 
 config.section_('Data') 
-config.Data.outputPrimaryDataset = 'NuGun'
+config.Data.outputPrimaryDataset = 'NuGunS'
 config.Data.splitting = 'EventBased'
 config.Data.unitsPerJob = generationInfo[puFromArg][2]
 config.Data.totalUnits = generationInfo[puFromArg][2] * generationInfo[puFromArg][1]
 config.Data.publication = False
-config.Data.outputDatasetTag = 'FbcmMultiInstanceNuGunPU{0}'.format(puFromArg)11
-# config.Data.outLFNDirBase = '/store/user/msedghi/multi-Instance/'
+config.Data.outputDatasetTag = 'FbcmMultiInstanceNuGunPU{0}'.format(puFromArg)
+config.Data.outLFNDirBase = '/store/user/msedghi/Fbcm/Aug2022Workshop/'
 # config.Data.outLFNDirBase = '/store/group/dpg_bril/comm_bril/vtest/'
-config.Data.outLFNDirBase = '/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/Aug2022Workshop/'
+# config.Data.outLFNDirBase = '/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/Aug2022Workshop/'
 
 
 config.section_("Site")
-# config.Site.storageSite = "T3_CH_CERNBOX"
-config.Site.storageSite = "T2_CH_CERN"
+config.Site.storageSite = "T3_CH_CERNBOX"
+# config.Site.storageSite = "T2_CH_CERN" 
 config.Site.whitelist = ["T2_CH_CERN"]
 # "T3_CH_CERNBOX"

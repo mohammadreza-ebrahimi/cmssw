@@ -1,0 +1,11 @@
+executable            = /afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SiPadDigitizer/test/Fbcm2022Analysis/FbcmPlotter_1.sh
+output                = output/$(ClusterId).$(ProcId).out
+error                 = output/$(ClusterId).$(ProcId).err
+log                   = output/$(ClusterId).log
++JobFlavour           = "tomorrow"
+transfer_executable   = False
+stream_output	      = True
+stream_error	      = True
+request_CPUs          = 1
+arguments             = -d /eos/home-m/msedghi/Fbcm/Aug2022Workshop/NuGun/FbcmMultiInstanceNuGunPU200/220831_220217/ -t WithTimewalkComp 
+queue 1

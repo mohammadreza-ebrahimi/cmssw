@@ -4,7 +4,7 @@
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
 # with command line options: --evt_type SingleNuE10_cfi -s GEN,SIM,DIGI --mc --fileout file:GEN_SIM_DIGI.root --conditions auto:phase2_realistic --pileup_input file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root --pileup AVE_200_BX_25ns,{'B':(-3,3),'N':1.5} --era Phase2,fbcmDigi,OnlyfbcmDigi --datatier GEN-SIM-DIGI-RAW --geometry Extended2026D81 --eventcontent FEVTDEBUG --python_filename GEN_SIM_DIGI_cfg.py --customise SimFbcm/SiPadDigitizer/aging.no_aging,Configuration/DataProcessing/Utils.addMonitoring --nThreads 2 -n 2 --no_exe
 import FWCore.ParameterSet.Config as cms
-instanceName= "Vts25mVPreAmpModified"
+
 import os
 def getInputFileList(baseDirectory, beginsWithTheseChars ): # without "/" at the end
     # baseDirectory ='/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/Aug2022Workshop/MinBias/FBCMV2MinBias/220820_202455'
@@ -49,7 +49,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1),
+    input = cms.untracked.int32(5),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
@@ -90,33 +90,30 @@ process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.19 $')
 )
 
-# # Output definition
-# process.TFileService = cms.Service("TFileService",
-# fileName = cms.string('histodemo.root')
-# )
+# Output definition
 
-# process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
-    # SelectEvents = cms.untracked.PSet(
-        # SelectEvents = cms.vstring('generation_step')
-    # ),
-    # dataset = cms.untracked.PSet(
-        # dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
-        # filterName = cms.untracked.string('')
-    # ),
-    # fileName = cms.untracked.string('file:GEN_SIM_DIGI.root'),
-    # outputCommands = process.FEVTDEBUGEventContent.outputCommands,
-    # splitLevel = cms.untracked.int32(0)
-# )
+process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('generation_step')
+    ),
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
+        filterName = cms.untracked.string('')
+    ),
+    fileName = cms.untracked.string('file:GEN_SIM_DIGI.root'),
+    outputCommands = process.FEVTDEBUGEventContent.outputCommands,
+    splitLevel = cms.untracked.int32(0)
+)
 
 # Additional output definition
 
 # Other statements
-process.mix.input.nbPileupEvents.averageNumber = cms.double(1.5)
+process.mix.input.nbPileupEvents.averageNumber = cms.double(200.0)
 process.mix.bunchspace = cms.int32(25)
 process.mix.minBunch = cms.int32(-3)
 process.mix.maxBunch = cms.int32(3)
-process.mix.input.fileNames = cms.untracked.vstring(['file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root'])
-#process.mix.input.fileNames = cms.untracked.vstring(minBiasFiles)
+# process.mix.input.fileNames = cms.untracked.vstring(['file:MinBias_14TeV_pythia8_TuneCUETP8M1_GEN_SIM.root'])
+process.mix.input.fileNames = cms.untracked.vstring(minBiasFiles)
 
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
@@ -137,28 +134,6 @@ process.generator = cms.EDProducer("FlatRandomEGunProducer",
     firstRun = cms.untracked.uint32(1),
     psethack = cms.string('single Nu E 10')
 )
-#########################
-
-
-process.FbcmNtuple = cms.EDAnalyzer('FbcmNtuplizer_v4',
-                                    # FbcmDigiTag = cms.InputTag("simFbcmDigis", instanceName),
-                                    # FbcmDigiTag = cms.InputTag("simFbcmDigis", "SiPad"), # study another instance
-                                    RHU_InterestedHitBins = cms.vint32(0), # cms.vint32(0,1), first and last elements are included, higly depends on "BinOffset" in SiPadFrontEndParameters_cfi.py
-                                    TreeName = cms.string( 'PU{0}'.format(200)),
-                                    InstanceNameTags = cms.vstring(
-                                    'SiPadWithTimewalk','SiPadNoTimewalk',
-                                    'SiPad25mVtsh', 'SiPad100mVtsh',
-                                    'SiPadRfa38k154') # provide a list of valid instanse
-                                    )
-
-outFName = 'outFbcm2022_pu{0}.root'.format( '200' )
-print("output is saved in {0}".format( outFName ) )
-process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string(outFName),
-                                   closeFileFast = cms.untracked.bool(True) )
-
-process.nTuple_step = cms.EndPath(process.FbcmNtuple)
-#########################
 
 
 # Path and EndPath definitions
@@ -167,11 +142,10 @@ process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.pdigi)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-# process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
+process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
 # Schedule definition
-#process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.digitisation_step,process.endjob_step,process.FEVTDEBUGoutput_step)
-process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.digitisation_step,process.endjob_step, process.nTuple_step)
+process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.digitisation_step,process.endjob_step,process.FEVTDEBUGoutput_step)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
@@ -185,7 +159,7 @@ for path in process.paths:
 
 # customisation of the process.
 
-process.mix.digitizers.SiPad.InstanceName = cms.string(instanceName)
+process.mix.digitizers.SiPad.InstanceName = cms.string('Vts25mVPreAmpModified')
 
 
 # Automatic addition of the customisation function from SimFbcm.SiPadDigitizer.aging
@@ -204,51 +178,6 @@ process = addMonitoring(process)
 
 
 # Customisation from command line
-
-SiPad1p=process.mix.digitizers.SiPad.clone()
-SiPad2p=SiPad1p.clone()
-SiPad3p=SiPad1p.clone()
-SiPad4p=SiPad1p.clone()
-SiPad5p=SiPad1p.clone()
-
-SiPad1p.InstanceName = cms.string('SiPadWithTimewalk')
-SiPad2p.InstanceName = cms.string('SiPadNoTimewalk')
-SiPad3p.InstanceName = cms.string('SiPad25mVtsh')
-SiPad4p.InstanceName = cms.string('SiPad100mVtsh')
-SiPad5p.InstanceName = cms.string('SiPadRfa38k154')
-
-
-SiPad1p.SiPadFrontEndParam[0].ApplyTimewalk =cms.bool(True)
-SiPad2p.SiPadFrontEndParam[0].ApplyTimewalk =cms.bool(False)
-SiPad3p.SiPadFrontEndParam[0].FE2022ASIC.ComparatorThreshold = cms.double(25.0)
-SiPad4p.SiPadFrontEndParam[0].FE2022ASIC.ComparatorThreshold = cms.double(100.0)
-SiPad5p.SiPadFrontEndParam[0].FE2022ASIC.R12 = cms.double(38.154)
-
-
-process.theDigitizers = cms.PSet(
-    SiPad1=SiPad1p,
-    SiPad2=SiPad2p,
-    SiPad3=SiPad3p,
-    SiPad4=SiPad4p,
-    SiPad5=SiPad5p,
-)
-process.theDigitizersValid = cms.PSet(
-    SiPad1=SiPad1p,
-    SiPad2=SiPad2p,
-    SiPad3=SiPad3p,
-    SiPad4=SiPad4p,
-    SiPad5=SiPad5p,
-)
-
-process.mix.digitizers = cms.PSet(
-    SiPad1=SiPad1p,
-    SiPad2=SiPad2p,
-    SiPad3=SiPad3p,
-    SiPad4=SiPad4p,
-    SiPad5=SiPad5p,
-)
-
-
 
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete

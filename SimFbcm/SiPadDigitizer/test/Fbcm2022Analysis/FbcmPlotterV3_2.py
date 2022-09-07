@@ -8,6 +8,27 @@ import os
 import sys
 import argparse 
 
+import os
+def getInputFileList(baseDirectory, beginsWithTheseChars, PFN_LFN ): # with "/" at the end
+    # baseDir = "/".join(baseDirectory.split('/')[:-1]) + "/"
+    baseDir = baseDirectory
+    if PFN_LFN == "PFN":
+        storeDir=baseDir
+    elif PFN_LFN == "LFN":
+        storeDir = "/" + "/".join(baseDir.split('/')[3:])
+    else:
+        print ('pls specify PFL or LFN')
+        
+    subDirs = os.listdir(baseDir)
+    minBiasFiles = []
+    for folder in subDirs:
+        minBiasDirectory = baseDir + folder
+        filesinDirectory = [storeDir + folder + "/" + f for f in os.listdir(minBiasDirectory) if f[:len(beginsWithTheseChars)] == beginsWithTheseChars]
+        minBiasFiles = minBiasFiles + filesinDirectory
+    return minBiasFiles
+
+
+
 def WriteAtBase(outdir , numOfSensorGroups ):
         #outdir.mkdir( 'numOfSensorGroups' ).cd()
         outdir.cd()
@@ -53,10 +74,12 @@ class SensorGroupInformation:
         self.TofRho = self.Make2DHistoPerRho( 'TofRho' , ';Rho;ToF' , int(round(200./(1./1.28/7.))) , -100 , 100 )
         self.BxTofRho = self.Make2DHistoPerRho( 'BxTofRho' , ';Rho;ToF' , int(round(30./(1./1.28/7.))) , -15. , 15. )
         self.ToaRho = self.Make2DHistoPerRho( 'ToaRho' , ';Rho;ToA' , int(round(30./(1./1.28/7.))) , -15. , 15. )
-        self.TotRho = self.Make2DHistoPerRho( 'TotRho' , ';Rho;ToT' , int(round(200./(1./1.28/7.))) , 0. , 50. )
+        self.TotRho = self.Make2DHistoPerRho( 'TotRho' , ';Rho;ToT' , int(round(50./(1./1.28/7.))) , 0. , 50. )
         self.RHURho = self.Make2DHistoPerRho( 'RhuRho' , ';Rho;RHU' , 30 , -15.0 , 15.0 ) 
-        self.PeakAmpl = self.Make2DHistoPerRho( 'PeakAmplitude' , ';Rho;Ampl' , 350 , 0.0 , 700.0 ) 
-
+        self.PeakAmpl = self.Make2DHistoPerRho( 'PeakAmplitude' , ';Rho;Ampl' , 200 , 0.0 , 150. ) 
+        self.SumChargeRho = self.Make2DHistoPerRho( 'SumCharge' , ';Rho;SumCharge' , 1000 , 0. , 130000. )
+        
+        
     def FillGeometry(self , geoTree ):
         for entry in geoTree:
             if entry.SiDieGroupIndex == self.SensorGroup:
@@ -84,6 +107,7 @@ class SensorGroupInformation:
         for spart in range( hit.nSimParticles ):
             self.TofRho.Fill( hit.SensorRho, hit.SimTof[spart] )
             self.BxTofRho.Fill( hit.SensorRho, hit.SimTof_perBx[spart] )
+            self.SumChargeRho.Fill(hit.SensorRho, hit.SimCharge[spart])
             
         
         for bx in range(hit.BxSlotCnt): 
@@ -138,41 +162,68 @@ class SensorGroupInformation:
         
         self.RHURho.Write()
         self.PeakAmpl.Write()
+        self.SumChargeRho.Write()
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument( '-i' , '--infile' , dest='infiles' , help='the name of the input files' , type=str , nargs="+" )
     parser.add_argument( '-p' , '--pu' , dest='PU' , default='auto' , help='the pu of the file' , type=str , choices=['auto' , '0p5', '1' , '1p5' , '10' , '50' , '100' , '140' , '200'])
     parser.add_argument( '-o' , '--outfile' , dest='outfile' , default='auto' , help='the name of the output file' , type=str )
+    parser.add_argument( '-d' , '--dir' , dest='inDir' , help='the directory of input files' , type=str )
+    parser.add_argument( '-t' , '--tag' , dest='tag' , help='the instance name' , type=str )
 
     opt = parser.parse_args()
-
-    if not opt.infiles:
-        print('please specify the input file name using -i option')
+    
+    if not opt.tag:
+        print('please specify the the tag (instance Name) using -t option')
         return 1
-    if opt.outfile == 'auto':
-        opt.outfile = os.path.basename( opt.infiles[0] )
-        
+
+    if not opt.infiles and not opt.inDir:
+        print('please specify the input file name using -i option, OR \n specify the input directory using -d option')
+        return 1
+    if opt.infiles and  opt.inDir:
+        print('please use only -i or -d options')
+        return 1
+    
+    
+    if opt.inDir:
+        baseDirectory = opt.inDir
+        opt.infiles = getInputFileList(baseDirectory, "outFbcm2022", 'PFN' )
+        print(opt.infiles)
+   
+    # print(opt.infiles)
     if opt.PU == 'auto':
         for pu in ['0p5', '1' , '1p5' , '10' , '50' , '100' , '140' , '200']:
-            if 'PU{0}/'.format( pu ) in opt.infiles[0]:
+            if 'pu{0}'.format( pu ) in opt.infiles[0]:
                 opt.PU = pu
                 print( 'pu set to ' + opt.PU)
     
-    opt.outfile = './output/results/updatedOutput_pu{}.root'.format(opt.PU)
-    print( 'output will be stored in ' + opt.outfile )
+    if opt.outfile == 'auto':
+        #infileName = os.path.basename( opt.infiles[0] )
+        #print(infileName)
+        #instanceName= infileName.split('_')[1]
+        instanceName = opt.tag
+        outNameFile = "./output/results/"+"outPlotterMerged_"+instanceName+"_pu{}".format(opt.PU)+".root"
+        opt.outfile = outNameFile
+        print(outNameFile)
         
+        
+        
+    
+
+    print( 'output will be stored in ' + opt.outfile )
+    
     fIn = ROOT.TFile.Open( opt.infiles[0] )
-    nSensorGroups = int(fIn.Get("FbcmNtuple/hNSensorGroups").GetBinContent( 1 ))
+    nSensorGroups = int(fIn.Get("FbcmNtuple/"+opt.tag+"/hNSensorGroups").GetBinContent( 1 ))
     fIn.Close()
     #print(nSensorGroups)
 
     
     nEvents = 0
-    allHits = ROOT.TChain("FbcmNtuple/PU{0}".format( opt.PU ) )
+    allHits = ROOT.TChain("FbcmNtuple/{0}/PU{1}".format(opt.tag , opt.PU ) )
     for f in opt.infiles:
         fIn = ROOT.TFile.Open( f )
-        nEvents += fIn.Get("FbcmNtuple/hNEvents").GetBinContent( 1 )
+        nEvents += fIn.Get("FbcmNtuple/"+opt.tag+"/hNEvents").GetBinContent( 1 )
         fIn.Close()
         allHits.Add( f )
 
@@ -182,7 +233,7 @@ def main():
     allSensorGroups = { i:SensorGroupInformation( i ) for i in range(nSensorGroups) }
     fIn = ROOT.TFile.Open( opt.infiles[0] )
     for _,j in allSensorGroups.items():
-        j.FillGeometry( fIn.Get('FbcmNtuple/GeometryInfo') )
+        j.FillGeometry( fIn.Get('FbcmNtuple/'+opt.tag+'/GeometryInfo') )
         j.SetNumOfBxSlots(sampleHit.BxSlotCnt)
     fIn.Close()
 
@@ -190,7 +241,7 @@ def main():
         for _,j in allSensorGroups.items():
             j.FillHit( hit )
 
-    fout = ROOT.TFile.Open( opt.outfile , "UPDATE")
+    fout = ROOT.TFile.Open( opt.outfile , "recreate")
     for _,j in allSensorGroups.items():
         j.Write( fout , nEvents )
     

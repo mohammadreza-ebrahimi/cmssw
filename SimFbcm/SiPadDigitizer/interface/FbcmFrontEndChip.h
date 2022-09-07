@@ -52,6 +52,7 @@ namespace FbcmFE {
 		void SetSubmoduleParameters();
         void setBcm1fVME_Parameters();
         void setASIC2022_Parameters();
+        void prepareAnalogSampler();
         void prepareInputSignal(SignalType & PulseShape);
 
         FftPreparation & fftPrep;
@@ -82,6 +83,7 @@ namespace FbcmFE {
         //SignalType preAmpLimittedOutputSig_;
 		SignalType boosterOutputSig_;
 		SignalType limiterFEv2OutputSig_;
+        SignalType sigAnalogSampler_;
         LinearCircuitFreqDomain preAmp_;
         //NonlinearLimiter limiterFEPreAmpv2_;
 		LinearCircuitFreqDomain boosterAmp_;

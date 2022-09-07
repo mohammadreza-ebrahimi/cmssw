@@ -2,10 +2,10 @@ executable            = /afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFb
 output                = output/$(ClusterId).$(ProcId).out
 error                 = output/$(ClusterId).$(ProcId).err
 log                   = output/$(ClusterId).log
-+JobFlavour           = "longlunch"
++JobFlavour           = "tomorrow"
 transfer_executable   = False
 stream_output	      = True
 stream_error	      = True
-
-arguments             = -i $(FILE) 
-queue FILE matching /eos/home-m/msedghi/Fbcm/Aug2022Workshop/nTuples/nTupleSiPad25mVtsh/FbcmNtuplePU200/220825_111448/0000/aFew/outFbcm2022SiPad25mVtsh_pu200_*.root
+request_CPUs          = 1
+arguments             = -d $(directory) 
+queue directory matching dirs /eos/home-m/msedghi/Fbcm/Aug2022Workshop/nTuples/*/FbcmNtuplePU200/*

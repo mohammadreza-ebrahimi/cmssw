@@ -7,4 +7,4 @@ cd "$(dirname "$0")";
 export SCRAM_ARCH=slc7_amd64_gcc820;
 eval `scramv1 runtime -sh`;
 
-./FbcmPlotterV2.py $@;
+./FbcmPlotterV3_2.py $@;
