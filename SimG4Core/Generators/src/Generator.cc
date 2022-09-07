@@ -25,6 +25,9 @@ Generator::Generator(const ParameterSet &p)
       fPtransCut(p.getParameter<bool>("ApplyPtransCut")),
       fEtaCuts(p.getParameter<bool>("ApplyEtaCuts")),
       fPhiCuts(p.getParameter<bool>("ApplyPhiCuts")),
+      //HACK GA
+      fMIB(p.getUntrackedParameter<bool>("BeamBkgdEvent",false)),
+      //END HACK GA
       theMinPhiCut(p.getParameter<double>("MinPhiCut")),  // in radians (CMS standard)
       theMaxPhiCut(p.getParameter<double>("MaxPhiCut")),
       theMinEtaCut(p.getParameter<double>("MinEtaCut")),
@@ -171,7 +174,10 @@ void Generator::HepMC2G4(const HepMC::GenEvent *evt_orig, G4Event *g4evt) {
       // Particles which are not decayed by generator
       if (status == 1) {
         // filter out unwanted particles and vertices
-        if (fPDGFilter && !pdgFilterSel && IsInTheFilterList(pdg)) {
+        // if (fPDGFilter && !pdgFilterSel && IsInTheFilterList(pdg)) {
+        // HACK GA
+        if (fPDGFilter && !pdgFilterSel && IsInTheFilterList(pdg) && !fMIB) {
+        // END HACK GA
           continue;
         }
 
@@ -303,7 +309,10 @@ void Generator::HepMC2G4(const HepMC::GenEvent *evt_orig, G4Event *g4evt) {
 
       // Particles of status 1 trasnported along the beam pipe
       // HECTOR transport of protons are done in corresponding PPS producer
-      if (1 == status && std::abs(zimpact) >= Z_hector && rimpact2 <= theDecRCut2) {
+      // if (1 == status && std::abs(zimpact) >= Z_hector && rimpact2 <= theDecRCut2) {
+      // HACK GA
+      if (1 == status && std::abs(zimpact) >= Z_hector && rimpact2 <= theDecRCut2 && !fMIB) {
+      // END HACK GA 
         // very forward n, nbar, gamma are allowed
         toBeAdded = (2112 == std::abs(pdg) || 22 == pdg);
         if (verbose > 1) {
