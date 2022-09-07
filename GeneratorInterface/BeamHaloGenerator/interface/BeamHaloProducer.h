@@ -1,61 +1,78 @@
-#ifndef BeamHalo_Producer_h
-#define BeamHalo_Producer_h
+#ifndef BEAMHALOPRODUCER_H
+#define BEAMHALOPRODUCER_H
 
-#include <map>
 #include <string>
+#include <iostream>
 
-#include "HepMC/GenEvent.h"
 
-#include "CLHEP/Random/RandFlat.h"
-
-#include "FWCore/Framework/interface/one/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "FWCore/Framework/interface/Run.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/one/EDProducer.h"
+//#include "FWCore/Framework/interface/one/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-namespace CLHEP {
-  class HepRandomEngine;
-}
+#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
-namespace edm {
-  class BeamHaloProducer : public one::EDProducer<EndRunProducer, one::WatchLuminosityBlocks, one::SharedResources> {
-  public:
-    /// Constructor
-    BeamHaloProducer(const ParameterSet&);
-    /// Destructor
-    ~BeamHaloProducer() override;
+class BeamHaloGenerator;
 
-    void setRandomEngine(CLHEP::HepRandomEngine* v);
+namespace edm
+{
+  class BeamHaloProducer : public edm::one::EDProducer<edm::EndRunProducer, edm::one::WatchLuminosityBlocks, edm::one::SharedResources> {
+    //class BeamHaloProducer : public EDProducer {
+    public:
+      /// Constructor
+      BeamHaloProducer(const ParameterSet &);
+      /// Destructor
+      virtual ~BeamHaloProducer();
 
-  private:
-    bool call_ki_bhg_init(long& seed);
-    bool call_bh_set_parameters(int* ival, float* fval, const std::string cval_string);
-    bool call_ki_bhg_fill(int& iret, float& weight);
-    bool call_ki_bhg_stat(int& iret);
+      //virtual void beginRun(Run & r, const EventSetup & es);
+      virtual void produce(Event & e, const EventSetup & es);
+      //virtual void endRun(Run & r, const EventSetup & es);
+      virtual void endRunProduce(edm::Run&, edm::EventSetup const&);
+      void beginLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
+      void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override {}
 
-  private:
-    void produce(Event& e, const EventSetup& es) override;
-    void endRunProduce(Run& r, const EventSetup& es) override;
-    void beginLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
-    void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override {}
+      //std::string inputFile() const { return m_inputFile; }
+      std::vector<std::string> inputFiles() const { return m_inputFiles; }
+      double interfacePlane() const { return m_interfacePlane; }
+      float flipProbability() const { return m_flipProbability; }
+      bool flipEventEnabled() const { return m_flipEventEnabled; }
+      std::vector<std::string>* generatorSettings() { return &m_generatorSettings; }
+      std::string binaryBufferFile() const { return m_binaryBufferFile; }
 
-    void clear();
+    private:
 
-    HepMC::GenEvent* evt;
+      /** Input file type and therefore associated beam halo generator
+        that should be used. */
+      std::string m_inputTypeStr;
 
-    int GENMOD_;
-    int LHC_B1_;
-    int LHC_B2_;
-    int IW_MUO_;
-    int IW_HAD_;
-    float EG_MIN_;
-    float EG_MAX_;
-    std::string G3FNAME_;
+      /** Input file name */
+      //std::string m_inputFiles;
+      std::vector<std::string> m_inputFiles;
 
-    bool isInitialized_;
+      /** The position of the interface plane in mm. */
+      double m_interfacePlane;
+
+      /** Flip probability */
+      float m_flipProbability;
+
+      /** Flag for flipping event */
+      bool m_flipEventEnabled;
+
+      /** A vector of strings defining generator settings. */
+      std::vector<std::string> m_generatorSettings;
+
+      /** The file name used to store the binary buffer if required. */
+      std::string m_binaryBufferFile;
+
+      /** A pointer to the beam halo generator */
+      BeamHaloGenerator *m_beamHaloGenerator;
+
   };
 
-}  // namespace edm
+  }
 
 #endif
