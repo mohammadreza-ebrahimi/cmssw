@@ -5,7 +5,6 @@ git cms-init
 git remote add fbcm-cmssw https://github.com/m-sedghi/cmssw.git
 git pull my-cmssw CMSSW_11_2_FbcmBcm1f
 
-
 git cms-addpkg DataFormats/DetId
 git cms-addpkg DataFormats/FbcmDetId
 git cms-addpkg DataFormats/GeometrySurface
@@ -21,6 +20,7 @@ git cms-addpkg SimFbcm
 git cms-addpkg SimGeneral/MixingModule
 git cms-addpkg Geometry/TrackerCommonData
 git cms-addpkg Geometry/CMSCommonData
+git cms-addpkg Geometry/ForwardCommonData
 git cms-addpkg Configuration/Geometry
 git cms-addpkg Configuration/Eras
 git cms-addpkg Configuration/EventContent
