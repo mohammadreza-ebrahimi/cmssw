@@ -42,7 +42,7 @@ process.source = cms.Source("PoolSource",
         #'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/GEN_SIM_DIGI.root'
         #'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/new4BCM1F/GEN_SIM_DIGI.root'
         #'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/new4BCM1F/GEN_SIM_DIGI_Run3.root'
-        # 'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/Fbcm2022Aug/GEN_SIM_DIGI.root'
+        'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/Fbcm2022Aug/GEN_SIM_DIGI.root'
         #'file:/eos/home-m/msedghi/NuGun/FBCMNuGunPU200/220823_215040/0000/GEN_SIM_DIGI_1.root'
         # 'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/crabTest/GEN_SIM_DIGI.root'
     )
@@ -69,12 +69,13 @@ options.parseArguments()
 
 process.FbcmNtuple = cms.EDAnalyzer('FbcmNtuplizer_v3',
                                     FbcmDigiTag = cms.InputTag("simFbcmDigis", options.InstanceName),
-                                    #FbcmDigiTag = cms.InputTag("simFbcmDigis", "SiPad2"), # study another instance
+                                    # FbcmDigiTag = cms.InputTag("simFbcmDigis", "SiPad"), # study another instance
                                     RHU_InterestedHitBins = cms.vint32(0), # cms.vint32(0,1), first and last elements are included, higly depends on "BinOffset" in SiPadFrontEndParameters_cfi.py
                                     TreeName = cms.string( 'PU{0}'.format(options.PU) )
+                                    )
 )
 
-outFName = 'outFbcm2022{0}_pu{1}.root'.format( options.InstanceName , options.PU )
+outFName = 'outFbcm2022_{0}_pu{1}.root'.format( options.InstanceName , options.PU )
 print("output is saved in {0}".format( outFName ) )
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string(outFName),

@@ -12,7 +12,7 @@ import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(True)
 
-from ROOT import TCanvas, TGraph
+from ROOT import TCanvas, TGraph, TMath
 import time
 import os 
 import sys
@@ -105,6 +105,7 @@ class SensorGroupInformation:
         
         self.RhuRho = self.InDir.Get( 'h{0}_SG{1}'.format( 'RhuRho' , self.SensorGroup ) )
         self.PeakAmpl = self.InDir.Get( 'h{0}_SG{1}'.format( 'PeakAmplitude' , self.SensorGroup ) )
+        self.SumCharge = self.InDir.Get( 'h{0}_SG{1}'.format( 'SumCharge' , self.SensorGroup ) )
         
         self.nSimHits.Divide( self.nTotals )
         self.nSimHits.Scale( 1.0/NumOfBxInMixing )
@@ -222,7 +223,10 @@ class SensorGroupInformation:
 
     #
     def hPeakAmpl(self ):
-        return self.PeakAmpl     
+        return self.PeakAmpl 
+    
+    def hSumCharge(self ):
+        return self.SumCharge             
     
     def hRhuRho(self ):
         return self.RhuRho        
@@ -246,7 +250,7 @@ class SensorGroupInformation:
         return self.lambdaDigiC_Rhu        
     #
     
-    def WriteBxTof(self, Rho):
+    def WriteBxTof(self, Rho, scanName):
         self.c2 = ROOT.TCanvas('Tof_PU{0}SG{1}'.format( self.PU , self.SensorGroup ), 'PU{0}SG{1}'.format( self.PU , self.SensorGroup ) )
         #Tpadd=ROOT.TPad("H1","H2",)
         b = self.nSimHits.FindBin(Rho)
@@ -261,9 +265,9 @@ class SensorGroupInformation:
         BxTof_1FH.GetXaxis().SetRangeUser(-0.,25.0)
         BxTof_1FH.Draw()
         self.c2.BuildLegend()
-        self.c2.SaveAs( self.destDir + '{0}.png'.format( self.c2.GetName() ) )
+        self.c2.SaveAs( self.destDir+'{0}_{1}.png'.format( self.c2.GetName(), scanName ) )
         
-    def WriteToA(self, Rho):
+    def WriteToA(self, Rho, scanName):
         self.c2 = ROOT.TCanvas('ToA_PU{0}SG{1}'.format( self.PU , self.SensorGroup ), 'PU{0}SG{1}'.format( self.PU , self.SensorGroup ) )
         #Tpadd=ROOT.TPad("H1","H2",)
         b = self.nSimHits.FindBin(Rho)
@@ -278,9 +282,9 @@ class SensorGroupInformation:
         ToA_1FH.GetXaxis().SetRangeUser(-15.,15.)
         ToA_1FH.Draw()
         self.c2.BuildLegend()
-        self.c2.SaveAs( self.destDir + '{0}.png'.format( self.c2.GetName() ) )
+        self.c2.SaveAs( self.destDir+'{0}_{1}.png'.format( self.c2.GetName(), scanName ) )
         
-    def WriteToT(self, Rho):
+    def WriteToT(self, Rho, scanName):
         self.c2 = ROOT.TCanvas('ToT_PU{0}SG{1}'.format( self.PU , self.SensorGroup ), 'PU{0}SG{1}'.format( self.PU , self.SensorGroup ) )
         #Tpadd=ROOT.TPad("H1","H2",)
         b = self.nSimHits.FindBin(Rho)
@@ -291,30 +295,51 @@ class SensorGroupInformation:
         y_proj.Copy(ToT_1FH)
         ToT_1FH.SetTitle( 'ToT' )
         ToT_1FH.SetStats( False )
-        ToT_1FH.Rebin(7)
-        ToT_1FH.GetXaxis().SetRangeUser(-5.,35.)
+        ToT_1FH.Rebin(2)
+        ToT_1FH.GetXaxis().SetRangeUser(-5.,31.)
         ToT_1FH.Draw()
         self.c2.BuildLegend()
-        self.c2.SaveAs( self.destDir + '{0}.png'.format( self.c2.GetName() ) )
+        self.c2.SaveAs( self.destDir+'{0}_{1}.png'.format( self.c2.GetName(), scanName ) )
         
-    def WriteAmpl(self, Rho):
+    def WriteAmpl(self, Rho, scanName):
         self.c2 = ROOT.TCanvas('Amplitude_mV_PU{0}SG{1}'.format( self.PU , self.SensorGroup ), 'PU{0}SG{1}'.format( self.PU , self.SensorGroup ) )
         #Tpadd=ROOT.TPad("H1","H2",)
         b = self.nSimHits.FindBin(Rho)
+        # print(b)
         y_proj = self.PeakAmpl.ProjectionY("py",b)
         y_proj.SetName(self.PeakAmpl.GetName()+"_projY{0}".format(self.SensorGroup))
         y_proj.Draw("same, hist")
         Ampl_1FH = ROOT.TH1F()
         y_proj.Copy(Ampl_1FH)
+        # Ampl_1FH.Fit("TMath::Landau(-x)") # not works
         Ampl_1FH.SetTitle( 'Ampl(mV)' )
-        Ampl_1FH.SetStats( False )
-        Ampl_1FH.Rebin(4)
-        Ampl_1FH.GetXaxis().SetRangeUser(0.0,400.0)
+        Ampl_1FH.SetStats( True )
+        Ampl_1FH.Rebin(1)
+        # Ampl_1FH.GetXaxis().SetRangeUser(0.0,00.0)
         Ampl_1FH.Draw()
-        self.c2.BuildLegend()
-        self.c2.SaveAs( self.destDir + '{0}.png'.format( self.c2.GetName() ) )
+        #self.c2.BuildLegend()
+        self.c2.SaveAs( self.destDir+'{0}_{1}.png'.format( self.c2.GetName(), scanName ) )
+    
+    def WriteSimCharge(self, Rho, scanName):
+        self.c2 = ROOT.TCanvas('SumCharge_sim_PU{0}SG{1}'.format( self.PU , self.SensorGroup ), 'PU{0}SG{1}'.format( self.PU , self.SensorGroup ) )
+        #Tpadd=ROOT.TPad("H1","H2",)
+        b = self.nSimHits.FindBin(Rho)
+        # print(b)
+        y_proj = self.SumCharge.ProjectionY("py",b)
+        y_proj.SetName(self.SumCharge.GetName()+"_projY{0}".format(self.SensorGroup))
+        y_proj.Draw("same, hist")
+        Charge_1FH = ROOT.TH1F()
+        y_proj.Copy(Charge_1FH)
+        # Charge_1FH.Fit("TMath::Landau(-x)") # not works
+        Charge_1FH.SetTitle( 'sum of collected charges' )
+        Charge_1FH.SetStats( True )
+        Charge_1FH.Rebin(7)
+        # Charge_1FH.GetXaxis().SetRangeUser(0.0,00.0)
+        Charge_1FH.Draw()
+        #self.c2.BuildLegend()
+        self.c2.SaveAs( self.destDir+'{0}_{1}.png'.format( self.c2.GetName(), scanName ) )
         
-    def WriteRhu(self, Rho):
+    def WriteRhu(self, Rho, scanName):
         self.c2 = ROOT.TCanvas('Rhu_PU{0}SG{1}'.format( self.PU , self.SensorGroup ), 'PU{0}SG{1}'.format( self.PU , self.SensorGroup ) )
         #Tpadd=ROOT.TPad("H1","H2",)
         b = self.nSimHits.FindBin(Rho)
@@ -329,7 +354,7 @@ class SensorGroupInformation:
         Rhu_1FH.GetXaxis().SetRangeUser(-6,6)
         Rhu_1FH.Draw()
         self.c2.BuildLegend()
-        self.c2.SaveAs( self.destDir + '{0}.png'.format( self.c2.GetName() ) )
+        self.c2.SaveAs( self.destDir+'{0}_{1}.png'.format( self.c2.GetName(), scanName ) )
         
         
 def puValue(x):
@@ -387,20 +412,22 @@ def main():
     if opt.infile:
         ExplicitInputfile = True
         if opt.infile[0]=='.' :
-            destDir="."+"/".join(opt.infile.split(os.sep)[0:-2])+'/'
-            opt.srcType = (opt.infile.split(os.sep)[-1]).split('.')[0]
+            destDir="/".join(opt.infile.split(os.sep)[0:-2])+'/'
+            baseInFileName = (opt.infile.split(os.sep)[-1]).split('.')[0]
             
         elif opt.infile[0]!='/':
             destDir="."+"/".join(opt.infile.split(os.sep)[0:-2])+'/'
-            opt.srcType = opt.infile.split('.')[0]
+            baseInFileName = opt.infile.split('.')[0]
         else:
             destDir="/".join(opt.infile.split(os.sep)[0:-2])+'/'
-            opt.srcType=(opt.infile.split(os.sep)[-1]).split('.')[0]
+            baseInFileName=(opt.infile.split(os.sep)[-1]).split('.')[0]
         
-        print(opt.srcType)
+        instanceName = baseInFileName.split('_')[1]
         
+        # print(instanceName)
+        opt.srcType = instanceName
         print("dest Dir is {0}".format(destDir))
-        
+        # exit(0)
         #return
     else:
         if opt.srcType:
@@ -446,12 +473,12 @@ def main():
         for sg in range( nSensorGroups ):
             s = SensorGroupInformation(sg , pu , fIn , destDir)
             #sg_list.append(copy.deepcopy(s))
-            s.WriteAmpl(14.5)
-            s.WriteRhu(14.5)
-            s.WriteToA(14.5)
-            s.WriteBxTof(14.5)
-            s.WriteToT(14.5)
-            
+            s.WriteAmpl(14.49, opt.srcType)
+            # s.WriteRhu(14.5, opt.srcType)
+            s.WriteToA(14.5, opt.srcType)
+            # s.WriteBxTof(14.5, opt.srcType)
+            s.WriteToT(14.5, opt.srcType)
+            s.WriteSimCharge(14.5, opt.srcType)
             sg_list[sg]=s
             puDict[pu] = sg_list
 
@@ -491,6 +518,7 @@ def main():
         
         PeakAmplList = []
         RhuRhoList = []
+        SumChargeList = []
         #
         
         for pu in opt.PU:
@@ -530,19 +558,19 @@ def main():
             
             rhoVect = nTotals_data["xAxis"]
             
-            ToaRho_data = GetData2D(puDict[pu][sg].hToaRho() , 1 , 7)
+            ToaRho_data = GetData2D(puDict[pu][sg].hToaRho() , 1 , 1)
             #ToaRho_data.pop("xAxis")
             ToaRhoList.append(ToaRho_data)
 
-            TotRho_data = GetData2D(puDict[pu][sg].hTotRho() , 1 , 7)
+            TotRho_data = GetData2D(puDict[pu][sg].hTotRho() , 1 , 2)
             #TotRho_data.pop("xAxis")
             TotRhoList.append(TotRho_data)
 
-            TofRho_data = GetData2D(puDict[pu][sg].hTofRho() , 1 , 7)
+            TofRho_data = GetData2D(puDict[pu][sg].hTofRho() , 1 , 1)
             #TofRho_data.pop("xAxis")
             TofRhoList.append(TofRho_data)
             
-            BxTofRho_data = GetData2D(puDict[pu][sg].hBxTofRho() , 1 , 7)
+            BxTofRho_data = GetData2D(puDict[pu][sg].hBxTofRho() , 1 , 1)
             #BxTofRho_data.pop("xAxis")
             BxTofRhoList.append(BxTofRho_data)
             
@@ -572,6 +600,9 @@ def main():
             tempData = GetData2D(puDict[pu][sg].hRhuRho() , 1 , 1)
             RhuRhoList.append(tempData)            
             
+            tempData = GetData2D(puDict[pu][sg].hSumCharge() , 1 , 7)
+            SumChargeList.append(tempData)
+            
             ##----------
             
             
@@ -596,6 +627,7 @@ def main():
         #
         
         SensorDict["PeakAmpl"] = np.array(PeakAmplList)
+        SensorDict["SumSimCharge"] = np.array(SumChargeList)
         SensorDict["Rhu"] = np.array(RhuRhoList)
         SensorDict["TotalRhuHitsPerBx"] = np.array(nTotalRhuHitsPerBxList)
         SensorDict["InterstedBinRhuHits"] = np.array(nInterstedBinRhuHitsList)

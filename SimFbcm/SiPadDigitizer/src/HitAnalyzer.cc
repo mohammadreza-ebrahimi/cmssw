@@ -46,9 +46,11 @@ namespace FbcmFE {
              UpperTimeIndexCut=Len-1;
         
         bool HitDetected=false;
-        unsigned int start_ = 0, end_;
+        int start_ = 0, end_, samplerSart =0;
+        
         int BckwardCNT,i;
         float ToA,ToT;
+        float oldToA;
         ToaTotPair TotToa;
         ToAStatus ToAState=ToAStatus::UnKnown;
         float ToTCorrectionCount = 0;
@@ -91,23 +93,27 @@ namespace FbcmFE {
                     HitDetected=false;
                     ToA=timeVectAligned_[start_]-(BXC_SlotNo_*BX_Duration_);
                     ToT=timeVectAligned_[end_]-timeVectAligned_[start_];
-                    
+                    oldToA=ToA;
                     // -- update ToA with timewalk, if needed ------------
                    //std::cout << "toa: " << ToA << ", ToT: " << ToT << "\n";
                     if(isTimewalkEnabled_)
                         updateToAwithTimewalkTable(ToT, &ToA);
                    
-                  //std::cout << "after update: toa: " << ToA << ", ToT: " << ToT << "\n";                   
+                    //std::cout << "after update: toa: " << ToA << ", ToT: " << ToT << "\n";                   
                     //----------------------------------------------------
                     
                     SubBxBinNo= (int16_t)(round((ToA-binshift)/BinLen_));
                     
                     
+                   
                     
                     ToAState=GetToAStatus(ToA,ToT,HalfBxLen);
                     
-                    pAmpl = Signal2PeakAmplSampler_[start_];
-                    for (unsigned int k=start_ ; k < end_ ; k++ )
+                    
+                    samplerSart = start_ - ((oldToA-ToA) > 0.0 ? (int)((oldToA-ToA)*FS_) : 0) - BX_IndShift/2; 
+                    samplerSart = (samplerSart<0 ? 0 : samplerSart) ;
+                    pAmpl = Signal2PeakAmplSampler_[samplerSart]; // assuming it is possitive
+                    for (int k=samplerSart ; k < end_ ; k++ )
                         if (Signal2PeakAmplSampler_[k] > pAmpl) 
                             pAmpl=Signal2PeakAmplSampler_[k]; 
                         
@@ -139,7 +145,7 @@ namespace FbcmFE {
                     ToT=timeVectAligned_[end_]-timeVectAligned_[start_] +  ToTCorrectionCount/FS_ ;
                     //ToT=1000.0;
 
-
+                    oldToA=ToA;
                     // -- update ToA with timewalk, if needed -----------
                     // however, for invalid ToT, no need to updated ToA
                      if(isTimewalkEnabled_)
@@ -150,11 +156,13 @@ namespace FbcmFE {
                     SubBxBinNo= (int16_t)(round((ToA-binshift)/BinLen_));
                     ToAState=GetToAStatus(ToA,ToT,HalfBxLen);
 
-                    pAmpl = Signal2PeakAmplSampler_[start_];
-                    for (unsigned int k=start_ ; k < end_ ; k++ )
+                    samplerSart = start_ - ((oldToA-ToA) > 0.0 ? (int)((oldToA-ToA)*FS_) : 0) - BX_IndShift/2; 
+                    samplerSart = (samplerSart<0 ? 0 : samplerSart) ;
+                    pAmpl = Signal2PeakAmplSampler_[samplerSart]; // assuming it is possitive
+                    for (int k=samplerSart ; k < end_ ; k++ )
                         if (Signal2PeakAmplSampler_[k] > pAmpl) 
                             pAmpl=Signal2PeakAmplSampler_[k]; 
-
+                            
                     //TotToa.SetPairInfo(ToA,ToT,false, ToAState , SubBxBinNo, pAmpl );
                     
                     TotToa.SetPairInfo(ToA,ToT,true, ToAState , SubBxBinNo, pAmpl );
