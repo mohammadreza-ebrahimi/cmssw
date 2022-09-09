@@ -16,7 +16,8 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'file:/eos/cms/store/group/dpg_bril/comm_bril/phase2-sim/FBCM/NuGun/FBCMNuGunPU100/210130_220345/0000/GEN_SIM_DIGI_1.root'
         #'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/GEN_SIM_DIGI.root'
-        'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/new4BCM1F/GEN_SIM_DIGI_Filled.root'
+        #'file:/afs/cern.ch/work/m/msedghi/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/new4BCM1F/GEN_SIM_DIGI_Filled.root'
+         'file:/afs/cern.ch/work/m/msedghi/Tutorial/CMSSW_11_2_0_pre10/src/SimFbcm/SampleConfigs/new4BCM1F/GEN_SIM_DIGI_Filled.root'
     )
 )
 

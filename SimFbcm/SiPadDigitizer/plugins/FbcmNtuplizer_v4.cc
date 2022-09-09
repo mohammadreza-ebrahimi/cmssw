@@ -38,8 +38,7 @@ public:
   ~FbcmNtuplizer_v4();
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
-
+  
 private:
   virtual void beginJob() override;
   virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
@@ -186,15 +185,14 @@ FbcmNtuplizer_v4::FbcmNtuplizer_v4(const edm::ParameterSet& iConfig) :
   //FixedValuesTree = tagDirectory[instanceNames[0]].make<TTree>( "GeometryInfo" , "FixedValues" );
   //hNEvents = tagDirectory[instanceNames[0]].make<TH1I>("hNEvents" , "" , 1 , 0 , 1 );
   //hNSensorGroups = tagDirectory[instanceNames[0]].make<TH1I>("hNSensorGroups", "", 1, 0, 1);
-
-  
+ 
 
   //theTree->Branch("SensorRho" , &SensorRho , "SensorRho/f[8,22]", bsize ); // just to remmember: /f[8,22] causes misreading
   //theTree->Branch("SensorArea" , &SensorArea , "SensorArea/f[0.01,1.0]" , bsize  ); // just to remmember: /f[8,22] causes misreading
   
   
   
-  tmpVect = iConfig.getParameter< std::vector<int> >("RHU_InterestedHitBins");
+  tmpVect = iConfig.getParameter< std::vector<int>  >("RHU_InterestedHitBins");
   
   rhuInterestedHitBins_.clear();
   for (int i = tmpVect.front(); i <= tmpVect.back(); i++) 
