@@ -72,7 +72,7 @@ private:
   int numberOfSensorGroups; // maximum number of SiGroupIndex used in the digi step. 
   int nbrOfDiesPerRing; 
 
-  
+  int SensorZ_end;
   //int NumOfSensors;
   
   int nSimParticles;
@@ -137,6 +137,7 @@ FbcmNtuplizer_v3::FbcmNtuplizer_v3(const edm::ParameterSet& iConfig) :
   theTree->Branch("SensorArea" , &SensorArea , "SensorArea/F" , bsize  );
   theTree->Branch("nSimParticles" , &nSimParticles);
   theTree->Branch("SensorGroupIndex" , &SensorGroupIndex); 
+  theTree->Branch("SensorZend", &SensorZ_end);
   theTree->Branch("SimPdgId" , SimPdgIds , "SimPdgId[nSimParticles]/I" , bsize );
   theTree->Branch("SimPt" , SimPts , "SimPt[nSimParticles]/F" , bsize );
   theTree->Branch("SimCharge" , SimCharges , "SimCharge[nSimParticles]/F", bsize );
@@ -208,7 +209,9 @@ FbcmNtuplizer_v3::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       
       if ( SensorGroupIndex > numberOfSensorGroups )
           numberOfSensorGroups=SensorGroupIndex;
- 
+      
+      SensorZ_end = Digidata_it->SideIndex();
+      
       SensorRho=Digidata_it->Radius() ;
       SensorArea=Digidata_it->Area() ;
 
