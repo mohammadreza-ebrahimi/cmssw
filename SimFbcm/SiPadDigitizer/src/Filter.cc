@@ -235,6 +235,37 @@ namespace FbcmFE {
             //std::cout << HfVal_Booster ;
             //HfVal_Booster.conjugate();
 			Filter_Tf.emplace_back(HfVal_Booster);
+            
+            /* this block is alos OK. just to keep is for future
+            
+            N0 = ZinB /(ZinB + tmp1.Set(R6,0));
+            //N1 = ZinB_Reciprocal * R6 + tmp1.Set(1,0);
+            
+            //ZLB = (P1 + P2 + P3)/(P4 +P5);
+            ZLB_Reciprocal = (P4 + P5) / (P1 + P2 + P3);
+
+            N2 = ZLB_Reciprocal + tmp1.Set(1/R7 + 1/R13, 0);
+            
+            N3 = tmp1.Set(1/R2, omega*C4) * tmp2.Set(1/R3, omega*C5); 
+            
+            N4 = tmp1.Set(R7/R4, omega*(C6+C11)*R7);
+            N5 = tmp1.Set(0, omega*C11*E5); 
+            N6 = tmp1.Set(-G2*G3*G4*E5, 0) ;  // hack: minus sign modified
+            N7 = N6 /N3; 
+            N8 = N5 + N7; 
+            N9 = N8 / N4; 
+            N10 = N9 + tmp1.Set(1/R13,0); 
+            N11 = N0 * N10 ;
+            //N12 = N11 * tmp2.Set(-1,0);
+            HfVal_Booster = (N11 / N2)  ;
+            //HfVal_Booster = (N0 ) / N2 ;
+            //HfVal_Booster.Set(10.0,0);
+            //std::cout << HfVal_Booster ;
+            //HfVal_Booster.conjugate();
+			Filter_Tf.emplace_back(HfVal_Booster);
+            
+            */
+            
 		}
 		
         
