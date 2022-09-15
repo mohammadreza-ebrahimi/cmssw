@@ -2,8 +2,8 @@
 SrcDIR=$CMSSW_BASE/src
 cd $SrcDIR
 git cms-init
-git remote add fbcm-cmssw https://github.com/m-sedghi/cmssw.git
-git pull my-cmssw CMSSW_11_2_FbcmBcm1f
+git remote add fbcmBcm1f-cmssw https://github.com/m-sedghi/cmssw.git
+git pull fbcmBcm1f-cmssw CMSSW_11_2_FbcmBcm1f
 
 git cms-addpkg DataFormats/DetId
 git cms-addpkg DataFormats/FbcmDetId
