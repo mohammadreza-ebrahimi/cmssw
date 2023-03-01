@@ -14,7 +14,7 @@ FbcmSD::FbcmSD(const std::string& name,
 				 const SensitiveDetectorCatalog& clg,
 				 edm::ParameterSet const& p,
 				 const SimTrackManager* manager)
-    : SensitiveTkDetector(name, es, clg, p),
+    : SensitiveTkDetector(name, clg),
       theManager(manager),
       mySimHit(nullptr),
       lastId(0),

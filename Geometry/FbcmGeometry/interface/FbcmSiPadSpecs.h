@@ -22,14 +22,14 @@ public:
 
   const Topology& topology() const override;
   
-  const FbcmSiPadTopology& SiPadTopology() const ;
+  const FbcmSiPadTopology& SiPadTopology() const;
   
   const std::string& detName() const;
 
   const FbcmSpecs& parameters() const;
 
 private:
-  FbcmSiPadTopology* _topology;
+  FbcmSiPadTopology *_topology;
 
   std::vector<float> _p;
   std::string _n; ///

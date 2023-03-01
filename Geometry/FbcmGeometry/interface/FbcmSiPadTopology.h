@@ -23,7 +23,7 @@ public:
         m_ROWS_PER_ROC(1),  // Num of Rows per ROC 
         m_COLS_PER_ROC(1),  // Num of Cols per ROC 
         m_ROCS_X(1),        //  Number of ROCS X 
-        m_ROCS_Y(1)        //  Number of ROCS Y 
+        m_ROCS_Y(1)        //  Number of ROCS Y
 		{
     // Calculate the edge of the active sensor with respect to the center,
     // that is simply the half-size.
@@ -87,6 +87,7 @@ public:
 
   //-------------------------------------------------------------
   // There is No BIG SiPad !!
+  bool isBricked() const override { return true; }
   bool isItBigPixelInX(const int ixbin) const override { return false; }
   bool isItBigPixelInY(const int iybin) const override { return false; }
   bool containsBigPixelInX(int ixmin, int ixmax) const override { return false; }
