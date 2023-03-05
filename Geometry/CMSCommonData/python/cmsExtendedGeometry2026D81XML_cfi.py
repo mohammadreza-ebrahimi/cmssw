@@ -24,7 +24,6 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         'Geometry/CMSCommonData/data/muonMagnet.xml',
         'Geometry/CMSCommonData/data/cavern/2021/v1/cavern.xml',
         'Geometry/CMSCommonData/data/cavernFloor/2017/v1/cavernFloor.xml',
-<<<<<<< HEAD
         'Geometry/TrackerCommonData/data/PhaseII/trackerParameters.xml',
         'Geometry/TrackerCommonData/data/pixfwdCommon.xml',
         'Geometry/TrackerCommonData/data/PhaseII/Tracker_DD4hep_compatible_2021_02/pixfwd.xml',
