@@ -459,32 +459,6 @@ process.pixelTrackerHVOn = cms.EDFilter( "DetectorStateFilter",
     DebugOn = cms.untracked.bool( False ),
     DetectorType = cms.untracked.string( "pixel" )
 )
-        ))
-    )
-else:
-    process.OnlineDBOutputService = cms.Service("OnlineDBOutputService",
-
-        DBParameters = cms.PSet(
-                                messageLevel = cms.untracked.int32(0),
-                                authenticationPath = cms.untracked.string('.')
-                            ),
-
-        # Upload to CondDB
-        connect = cms.string('sqlite_file:BeamSpotOnlineLegacy.db'),
-        preLoadConnectionString = cms.untracked.string('sqlite_file:BeamSpotOnlineLegacy.db'),
-        runNumber = cms.untracked.uint64(options.runNumber),
-        lastLumiFile = cms.untracked.string('last_lumi.txt'),
-        #lastLumiUrl = cms.untracked.string('http://ru-c2e14-11-01.cms:11100/urn:xdaq-application:lid=52/getLatestLumiSection'),
-        writeTransactionDelay = cms.untracked.uint32(options.transDelay),
-        latency = cms.untracked.uint32(2),
-        autoCommit = cms.untracked.bool(True),
-        toPut = cms.VPSet(cms.PSet(
-            record = cms.string(BSOnlineRecordName),
-            tag = cms.string(BSOnlineTag),
-            timetype = cms.untracked.string('Lumi'),
-            onlyAppendUpdatePolicy = cms.untracked.bool(True)
-        ))
-    )
 
 #---------
 # Final path
